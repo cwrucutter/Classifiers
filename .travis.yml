@@ -75,9 +75,9 @@ before_install:
 
 # Create a catkin workspace with the package under integration.
 install:
-  - pip install requests[security]
-  - pip install --upgrade pip
-  - pip install coveralls
+  - sudo pip install requests[security]
+  - sudo pip install --upgrade pip
+  - sudo pip install coveralls
   - sudo apt-get install -y -qq lcov curl
   - mkdir -p ~/catkin_ws/src
   - cd ~/catkin_ws/src

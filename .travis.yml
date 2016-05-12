@@ -72,10 +72,11 @@ before_install:
   # Prepare rosdep to install dependencies.
   - sudo rosdep init
   - rosdep update
-  - pip install --upgrade pip
 
 # Create a catkin workspace with the package under integration.
 install:
+  - pip install requests[security]
+  - pip install --upgrade pip
   - pip install coveralls
   - sudo apt-get install -y -qq lcov curl
   - mkdir -p ~/catkin_ws/src

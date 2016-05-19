@@ -132,12 +132,12 @@ class GlobalROSBuild(object):
         self.updateWithWstool()
 
     def initCatkinWorkspace(self):
-        catkin_working_root = os.path.join("~", "catkin_ws", self._config)
+        catkin_working_root = os.path.join("~", "catkin_ws")
         catkin_src_dir = os.path.join(catkin_working_root, "src")
         Utilities.PFork(appToExecute="mkdir",
                         argsForApp=["-p", catkin_src_dir])
         os.chdir(catkin_src_dir)
-        Utilities.PFork(appToExecute="catkin_init_workspace")
+        Utilities.PFork(appToExecute="pwd && catkin_init_workspace")
         os.chdir(catkin_working_root)
         Utilities.PFork(appToExecute="catkin_make")
         Utilities.PFork(appToExecute="source", argsForApp=["devel/setup.bash"])
@@ -146,7 +146,7 @@ class GlobalROSBuild(object):
                         argsForApp=["-s", "$CI_SOURCE_PATH", "."])
 
     def updateWithWstool(self):
-        catkin_working_root = os.path.join("~", "catkin_ws", self._config)
+        catkin_working_root = os.path.join("~", "catkin_ws")
         catkin_src_dir = os.path.join(catkin_working_root, "src")
         os.chdir(catkin_src_dir)
         Utilities.PFork(appToExecute="wstool", argsForApp=["init"])

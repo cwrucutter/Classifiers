@@ -139,10 +139,13 @@ class GlobalROSBuild(object):
         Utilities.PFork(appToExecute="ls",
                         argsForApp=[FileSystem.getDirectory(FileSystem.WORKING,
                                     self._config, self._project_name)])
-        Utilities.PFork(appToExecute="cd",
-                        argsForApp=[os.path.relpath(FileSystem.getDirectory(FileSystem.ROOT,
+        print(os.path.relpath(FileSystem.getDirectory(FileSystem.ROOT,
                                                         self._config, self._project_name),
-                                                    catkin_src_dir)])
+                                                    catkin_src_dir))
+        print(catkin_src_dir, os.path.relpath(FileSystem.getDirectory(FileSystem.ROOT,
+                                                        self._config, self._project_name)))
+        Utilities.PFork(appToExecute="cd",
+                        argsForApp=["build/debug/classifiers/src"])
         Utilities.PFork(appToExecute="catkin_init_workspace")
         Utilities.PFork(appToExecute="cd",
                         argsForApp=[FileSystem.getDirectory(FileSystem.WORKING,

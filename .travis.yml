@@ -116,5 +116,5 @@ script:
   - export COVERALLS_SERVICE_NAME=travis-ci
   - source /opt/ros/$ROS_DISTRO/setup.bash
   # - cd ~/catkin_ws
-  - python LocalROSBuild.py
+  - sudo python LocalROSBuild.py
   # - catkin_make $( [ -f $CATKIN_OPTIONS ] && cat $CATKIN_OPTIONS ) && catkin_make run_tests && catkin_make test && catkin_make coveralls

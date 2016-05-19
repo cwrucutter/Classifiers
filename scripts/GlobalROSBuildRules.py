@@ -137,8 +137,8 @@ class GlobalROSBuild(object):
                                                        self._config, self._project_name), "src")])
         Utilities.PFork(appToExecute="cd",
                         argsForApp=[os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
-                        self._config, self._project_name), "src"),
-                                    "&&", "catkin_init_workspace"])
+                        self._config, self._project_name), "src")])
+        Utilities.PFork(appToExecute="catkin_init_workspace")
         Utilities.PFork(appToExecute="cd",
                         argsForApp=[FileSystem.getDirectory(FileSystem.WORKING,
                                     self._config, self._project_name), "&&", "catkin_make"])

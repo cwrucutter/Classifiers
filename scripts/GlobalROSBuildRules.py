@@ -128,32 +128,6 @@ class GlobalROSBuild(object):
         self.cleanBuildWorkspace()
         Utilities.mkdir(FileSystem.getDirectory(FileSystem.WORKING, self._config, self._project_name))
         # self.buildAndLoadDependencies()
-        self.initCatkinWorkspace()
-        self.updateWithWstool()
-
-    def initCatkinWorkspace(self):
-        catkin_working_root = os.path.join("~", "catkin_ws")
-        catkin_src_dir = os.path.join(catkin_working_root, "src")
-        Utilities.PFork(appToExecute="mkdir",
-                        argsForApp=["-p", catkin_src_dir])
-        os.chdir(catkin_src_dir)
-        Utilities.PFork(appToExecute="pwd && catkin_init_workspace")
-        os.chdir(catkin_working_root)
-        Utilities.PFork(appToExecute="catkin_make")
-        Utilities.PFork(appToExecute="source", argsForApp=["devel/setup.bash"])
-        os.chdir(catkin_src_dir)
-        Utilities.PFork(appToExecute="ln",
-                        argsForApp=["-s", "$CI_SOURCE_PATH", "."])
-
-    def updateWithWstool(self):
-        catkin_working_root = os.path.join("~", "catkin_ws")
-        catkin_src_dir = os.path.join(catkin_working_root, "src")
-        os.chdir(catkin_src_dir)
-        Utilities.PFork(appToExecute="wstool", argsForApp=["init"])
-        Utilities.PFork(appToExecute="if", argsForApp=["[[ -f $ROSINSTALL_FILE ]]", ";", "then wstool merge"])
-        Utilities.PFork(appToExecute="wstool", argsForApp=["up"])
-        os.chdir(catkin_working_root)
-        Utilities.PFork(appToExecute="rosdep", argsForApp=["install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO"])
         
 
     def generateProjectVersion(self):

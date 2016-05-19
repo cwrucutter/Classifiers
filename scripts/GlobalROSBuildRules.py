@@ -136,6 +136,7 @@ class GlobalROSBuild(object):
                                       self._config, self._project_name), "src")
         Utilities.PFork(appToExecute="mkdir",
                         argsForApp=["-p", catkin_src_dir])
+        Utilities.PFork(appToExecute="pwd")
         Utilities.PFork(appToExecute="ls",
                         argsForApp=[FileSystem.getDirectory(FileSystem.WORKING,
                                     self._config, self._project_name)])

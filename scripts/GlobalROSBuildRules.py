@@ -132,29 +132,29 @@ class GlobalROSBuild(object):
         self.updateWithWstool()
 
     def initCatkinWorkspace(self):
+        catkin_src_dir = os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
+                                      self._config, self._project_name), "src")
         Utilities.PFork(appToExecute="mkdir",
-                        argsForApp=["-p", os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
-                                                       self._config, self._project_name), "src")])
+                        argsForApp=["-p", catkin_src_dir])
         Utilities.PFork(appToExecute="ls",
                         argsForApp=[FileSystem.getDirectory(FileSystem.WORKING,
                                     self._config, self._project_name)])
         Utilities.PFork(appToExecute="cd",
-                        argsForApp=[os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
-                        self._config, self._project_name), "src")])
+                        argsForApp=[catkin_src_dir])
         Utilities.PFork(appToExecute="catkin_init_workspace")
         Utilities.PFork(appToExecute="cd",
                         argsForApp=[FileSystem.getDirectory(FileSystem.WORKING,
                                     self._config, self._project_name), "&&", "catkin_make"])
         Utilities.PFork(appToExecute="source", argsForApp=["devel/setup.bash"])
         Utilities.PFork(appToExecute="cd",
-                        argsForApp=[os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
-                                    self._config, self._project_name), "src"),
+                        argsForApp=[catkin_src_dir,
                                     "&&", "ln", "-s", "$CI_SOURCE_PATH", "."])
 
     def updateWithWstool(self):
+        catkin_src_dir = os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
+                                      self._config, self._project_name), "src")
         Utilities.PFork(appToExecute="cd",
-                        argsForApp=[os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
-                        self._config, self._project_name), "src")])
+                        argsForApp=[catkin_src_dir])
         Utilities.PFork(appToExecute="wstool", argsForApp=["init"])
         Utilities.PFork(appToExecute="if", argsForApp=["[[ -f $ROSINSTALL_FILE ]]", ";", "then wstool merge"])
         Utilities.PFork(appToExecute="wstool", argsForApp=["up"])

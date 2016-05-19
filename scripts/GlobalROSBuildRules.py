@@ -133,8 +133,8 @@ class GlobalROSBuild(object):
 
     def initCatkinWorkspace(self):
         Utilities.PFork(appToExecute="mkdir",
-                        appToExecute=["-p", os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
-                                                         self._config, self._project_name), "src")])
+                        argsForApp=["-p", os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
+                                                       self._config, self._project_name), "src")])
         Utilities.PFork(appToExecute="cd",
                         argsForApp=[os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
                         self._config, self._project_name), "src"),

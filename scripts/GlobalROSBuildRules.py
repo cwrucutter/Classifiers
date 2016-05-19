@@ -132,18 +132,20 @@ class GlobalROSBuild(object):
         self.updateWithWstool()
 
     def initCatkinWorkspace(self):
-        Utilities.mkdir(os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
-                        self._config, self._project_name), "src"))
+        Utilities.PFork(appToExecute="mkdir",
+                        appToExecute=["-p", os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
+                                                         self._config, self._project_name), "src")])
         Utilities.PFork(appToExecute="cd",
                         argsForApp=[os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
                         self._config, self._project_name), "src"),
                                     "&&", "catkin_init_workspace"])
         Utilities.PFork(appToExecute="cd",
-                        argsForApp=[FileSystem.getDirectory(FileSystem.WORKING, self._config, self._project_name), "&&", "catkin_make"])
+                        argsForApp=[FileSystem.getDirectory(FileSystem.WORKING,
+                                    self._config, self._project_name), "&&", "catkin_make"])
         Utilities.PFork(appToExecute="source", argsForApp=["devel/setup.bash"])
         Utilities.PFork(appToExecute="cd",
                         argsForApp=[os.path.join(FileSystem.getDirectory(FileSystem.WORKING,
-                        self._config, self._project_name), "src"),
+                                    self._config, self._project_name), "src"),
                                     "&&", "ln", "-s", "$CI_SOURCE_PATH", "."])
 
     def updateWithWstool(self):

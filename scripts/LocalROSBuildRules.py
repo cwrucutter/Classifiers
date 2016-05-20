@@ -31,7 +31,7 @@ class LocalROSBuild(GlobalROSBuild):
 
         catkinArgs = self.getCMakeArgs("", wd, test, logging, python)
         # catkinArgs.extend(["-G", "Unix Makefiles"])
-        Utilities.PFork(appToExecute="cd", argsForApp=[wd])
+        # Utilities.PFork(appToExecute="cd", argsForApp=[wd])
         Utilities.PFork(appToExecute="catkin_make", argsForApp=catkinArgs, wd=wd, failOnError=True)
 
     # this method will launch CMake.
@@ -81,7 +81,7 @@ class LocalROSBuild(GlobalROSBuild):
 
     def build(self):
         print("Building project [%s]" % self._project_name)
-        self.executeBuildSteps(["preBuild"])#, "runCatkin"])
+        self.executeBuildSteps(["preBuild", "runCatkin"])
 
     def uploadPackagedVersion(self):
         print("Uploading project [%s]" % self._project_name)

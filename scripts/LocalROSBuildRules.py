@@ -34,7 +34,7 @@ class LocalROSBuild(GlobalROSBuild):
         # Utilities.PFork(appToExecute="cd", argsForApp=[wd])
         # Utilities.PFork(appToExecute="catkin_make", argsForApp=catkinArgs, wd=wd, failOnError=True)
         Utilities.PFork(appToExecute="catkin_make",
-                        wd=os.path.join("~", "catkin_ws")
+                        wd=os.path.join("~", "catkin_ws"),
                         failOnError=True)
 
     # this method will launch CMake.

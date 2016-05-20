@@ -32,7 +32,8 @@ class LocalROSBuild(GlobalROSBuild):
         catkinArgs = self.getCMakeArgs("", wd, test, logging, python)
         # catkinArgs.extend(["-G", "Unix Makefiles"])
         # Utilities.PFork(appToExecute="cd", argsForApp=[wd])
-        Utilities.PFork(appToExecute="catkin_make", argsForApp=catkinArgs, wd=wd, failOnError=True)
+        # Utilities.PFork(appToExecute="catkin_make", argsForApp=catkinArgs, wd=wd, failOnError=True)
+        Utilities.PFork(appToExecute="catkin_make", failOnError=True)
 
     # this method will launch CMake.
     # CMake is handling all of our compiling and linking.

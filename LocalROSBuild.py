@@ -6,7 +6,8 @@ import sys
 
 
 # PYTHON PROJECT IMPORTS
-sys.path.append("scripts")  # now we can import modules from <currentDirectory>/scripts
+sys.path.append(os.path.join(os.path.realpath(__file__),
+                             "..", "scripts"))  # now we can import modules from <currentDirectory>/scripts
 import LocalROSBuildRules
 import GlobalROSBuildRules
 import Utilities

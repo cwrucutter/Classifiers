@@ -126,7 +126,7 @@ class GlobalROSBuild(object):
     def setupWorkspace(self):
         print("Setting up workspaces for project [%s]" % self._project_name)
         self.cleanBuildWorkspace()
-        Utilities.mkdir(FileSystem.getDirectory(FileSystem.WORKING, self._config, self._project_name))
+        # Utilities.mkdir(FileSystem.getDirectory(FileSystem.WORKING, self._config, self._project_name))
         # self.buildAndLoadDependencies()
         
 

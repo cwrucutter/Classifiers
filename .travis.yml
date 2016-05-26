@@ -60,9 +60,9 @@ env:
     - CATKIN_OPTIONS=$CI_SOURCE_PATH/catkin.options
     - ROS_PARALLEL_JOBS='-j8 -l6'
     # turns on coverage (value of variable is arbitrary)
-    - NOSE_WITH_COVERAGE='ON'
+    #- NOSE_WITH_COVERAGE='ON'
     # cover all python files in working directory
-    - NOSE_COVER_INCLUSIVE
+    #- NOSE_COVER_INCLUSIVE
     # restrict coverage to certain modules
     # - NOSE_COVER_PACKAGE=scripts
 

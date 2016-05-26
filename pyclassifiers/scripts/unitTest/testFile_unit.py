@@ -3,7 +3,7 @@
 import unittest
 import rospy
 import rostest
-import pyclassifiers as p
+import scripts.testFile as p
 import sys
 
 print("System paths: %s" % sys.path)

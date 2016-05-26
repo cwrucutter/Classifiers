@@ -4,6 +4,9 @@ import unittest
 import rospy
 import rostest
 import scripts.testFile as f
+import sys
+
+print("System paths: %s" % sys.path)
 
 class addValuesTest(unittest.TestCase):
     def test_add_0_0(self):

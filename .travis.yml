@@ -60,7 +60,7 @@ env:
     - CATKIN_OPTIONS=$CI_SOURCE_PATH/catkin.options
     - ROS_PARALLEL_JOBS='-j8 -l6'
     - NOSE_WITH_COVERAGE='ON'
-    - NOSE_COVER_PACKAGE=testFile
+    - NOSE_COVER_PACKAGE=pyclassifiers
 
 ################################################################################
 

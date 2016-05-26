@@ -79,6 +79,7 @@ install:
   - sudo pip install requests[security]
   - sudo pip install --upgrade pip
   - sudo pip install coveralls
+  - sudo pip install coverage
   - sudo apt-get install -y -qq lcov curl
   - mkdir -p ~/catkin_ws/src
   - cd ~/catkin_ws/src
@@ -118,5 +119,5 @@ script:
   - export COVERALLS_SERVICE_NAME=travis-ci
   - source /opt/ros/$ROS_DISTRO/setup.bash
   - cd ~/catkin_ws
-  - catkin_make $( [ -f $CATKIN_OPTIONS ] && cat $CATKIN_OPTIONS ) && catkin_make run_tests && catkin_make test
+  - catkin_make $( [ -f $CATKIN_OPTIONS ] && cat $CATKIN_OPTIONS ) && catkin_make run_tests --with-coverage && catkin_make test
   # - catkin_make $( [ -f $CATKIN_OPTIONS ] && cat $CATKIN_OPTIONS ) && catkin_make run_tests && catkin_make test && catkin_make coveralls

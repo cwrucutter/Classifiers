@@ -11,8 +11,8 @@ from coverage import Coverage
 
 
 currentDir = os.path.dirname(os.path.realpath(__file__))
-scriptsDir = os.path.join(currentDir, "..")
-sys.path.append([currentDir, scriptsDir])
+scriptsDir = os.path.abspath(os.path.join(currentDir, ".."))
+sys.path.extend([currentDir, scriptsDir])
 
 print("sys.path: %s" % sys.path)
 

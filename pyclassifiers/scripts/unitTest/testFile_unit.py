@@ -14,6 +14,8 @@ currentDir = os.path.dirname(os.path.realpath(__file__))
 scriptsDir = os.path.join(currentDir, "..")
 sys.path.append([currentDir, scriptsDir])
 
+print("sys.path: %s" % sys.path)
+
 # PYTHON PROJECT IMPORTS
 import testFile
 

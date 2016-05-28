@@ -16,7 +16,6 @@ class addValuesTest(unittest.TestCase):
         self.assertEqual(4, p.addValues(1, 3))
 
 if __name__ == "__main__":
-    5 == 4
     currentDir = os.path.dirname(os.path.realpath(__file__))
     cov = Coverage(source=os.path.join(currentDir, ".."))
     cov.start()

@@ -65,6 +65,7 @@ env:
     - NOSE_COVER_INCLUSIVE
     # restrict coverage to certain modules
     - NOSE_COVER_PACKAGE=$CI_SOURCE_PATH/pyclassifiers/scripts
+    - COVERAGE_FILE=pyclassifiers_coverage.coverage
 
 ################################################################################
 

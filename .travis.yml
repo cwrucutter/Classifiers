@@ -62,10 +62,9 @@ env:
     # turns on coverage (value of variable is arbitrary)
     - NOSE_WITH_COVERAGE='ON'
     # cover all python files in working directory
-    # - NOSE_COVER_INCLUSIVE
+    - NOSE_COVER_INCLUSIVE='ON'
     # restrict coverage to certain modules
     - NOSE_COVER_PACKAGE=$CI_SOURCE_PATH/pyclassifiers/scripts
-    # - NOSE_COVER_CONFIG_FILE=$CI_SOURCE_PATH/coveralls_config.txt
     - COVERAGE_FILE=$CI_SOURCE_PATH/pyclassifiers_coverage.coverage
 
 ################################################################################
@@ -129,12 +128,6 @@ script:
   - source /opt/ros/$ROS_DISTRO/setup.bash
   - cd ~/catkin_ws
   - catkin_make $( [ -f $CATKIN_OPTIONS ] && cat $CATKIN_OPTIONS ) && catkin_make run_tests && catkin_make test
-  # - python $CI_SOURCE_PATH/pyclassifiers/scripts/unitTest/testFile_unit.py
-  # - catkin_make $( [ -f $CATKIN_OPTIONS ] && cat $CATKIN_OPTIONS ) && catkin_make run_tests && catkin_make test && catkin_make coveralls
-  - ls "$CI_SOURCE_PATH/pyclassifiers/scripts/unitTest"
-  - ls "$CI_SOURCE_PATH/pyclassifiers/scripts"
-  - ls "$CI_SOURCE_PATH/pyclassifiers"
-  - ls "$CI_SOURCE_PATH"
 
 after_success:
   - coveralls --data_file="$COVERAGE_FILE"

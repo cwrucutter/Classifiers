@@ -6,7 +6,6 @@ import rospy
 import rostest
 import sys
 import os
-from coverage import Coverage
 
 
 
@@ -27,9 +26,4 @@ class addValuesTest(unittest.TestCase):
         self.assertEqual(4, pyclassifiers.addValues(1, 3))
 
 if __name__ == "__main__":
-    # currentDir = os.path.dirname(os.path.realpath(__file__))
-    cov = Coverage(source=[scriptsDir])
-    cov.start()
     rostest.rosrun("pyclassifiers", "addValueTest", addValuesTest)
-    cov.stop()
-    cov.xml_report(outfile=os.path.join(currentDir, "coverageTests.xml"))

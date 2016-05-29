@@ -64,7 +64,7 @@ env:
     # cover all python files in working directory
     - NOSE_COVER_INCLUSIVE
     # restrict coverage to certain modules
-    - NOSE_COVER_PACKAGE=pyclassifiers
+    - NOSE_COVER_PACKAGE=$CI_SOURCE_PATH/pyclassifiers/scripts
 
 ################################################################################
 
@@ -129,3 +129,6 @@ script:
   # - python $CI_SOURCE_PATH/pyclassifiers/scripts/unitTest/testFile_unit.py
   # - catkin_make $( [ -f $CATKIN_OPTIONS ] && cat $CATKIN_OPTIONS ) && catkin_make run_tests && catkin_make test && catkin_make coveralls
   - ls "$CI_SOURCE_PATH/pyclassifiers/scripts/unitTest"
+
+after_success:
+  - coveralls

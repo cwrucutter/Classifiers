@@ -85,6 +85,7 @@ install:
   - sudo pip install requests[security]
   - sudo pip install --upgrade pip
   - sudo pip install coveralls
+  - sudo pip install python-coveralls
   - sudo pip install coverage
   - sudo apt-get install -y -qq lcov curl
   - mkdir -p ~/catkin_ws/src

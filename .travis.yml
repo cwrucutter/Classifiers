@@ -64,8 +64,7 @@ env:
     # cover all python files in working directory
     # - NOSE_COVER_INCLUSIVE
     # restrict coverage to certain modules
-    # - NOSE_COVER_PACKAGE=$CI_SOURCE_PATH/pyclassifiers/scripts
-    - NOSE_COVER_PACKAGE=pyclassifiers
+    - NOSE_COVER_PACKAGE=$CI_SOURCE_PATH/pyclassifiers/scripts
     # - NOSE_COVER_CONFIG_FILE=$CI_SOURCE_PATH/coveralls_config.txt
     - COVERAGE_FILE=$CI_SOURCE_PATH/pyclassifiers_coverage.coverage
 

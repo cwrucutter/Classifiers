@@ -23,4 +23,4 @@ catkin_package(
 #     "${PROJECT_SOURCE_DIR}/../coveralls-cmake/cmake"    # path to project cmake modules
 # )
 
-catkin_add_nosetests(scripts/unitTest)
+catkin_add_nosetests(unitTest)

@@ -28,7 +28,7 @@ class addValuesTest(unittest.TestCase):
 
 if __name__ == "__main__":
     # currentDir = os.path.dirname(os.path.realpath(__file__))
-    cov = Coverage(source=["testFile"])
+    cov = Coverage(source=[scriptsDir])
     cov.start()
     rostest.rosrun("pyclassifiers", "addValueTest", addValuesTest)
     cov.stop()

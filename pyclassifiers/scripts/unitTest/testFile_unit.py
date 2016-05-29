@@ -17,14 +17,14 @@ sys.path.extend([currentDir, scriptsDir])
 print("sys.path: %s" % sys.path)
 
 # PYTHON PROJECT IMPORTS
-import testFile
+import pyclassifiers
 
 class addValuesTest(unittest.TestCase):
     def test_add_0_0(self):
-        self.assertEqual(0, testFile.addValues(0, 0))
+        self.assertEqual(0, pyclassifiers.addValues(0, 0))
 
     def test_add_1_3(self):
-        self.assertEqual(4, testFile.addValues(1, 3))
+        self.assertEqual(4, pyclassifiers.addValues(1, 3))
 
 if __name__ == "__main__":
     # currentDir = os.path.dirname(os.path.realpath(__file__))

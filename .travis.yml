@@ -136,4 +136,4 @@ script:
   - ls "$CI_SOURCE_PATH"
 
 after_success:
-  - coveralls
+  - coveralls --data_file="$COVERAGE_FILE"

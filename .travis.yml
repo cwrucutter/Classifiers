@@ -127,7 +127,7 @@ script:
   - export COVERALLS_SERVICE_NAME=travis-ci
   - source /opt/ros/$ROS_DISTRO/setup.bash
   - cd ~/catkin_ws
-  - catkin_make $( [ -f $CATKIN_OPTIONS ] && cat $CATKIN_OPTIONS ) && catkin_make run_tests && catkin_make test
+  - catkin_make $( [ -f $CATKIN_OPTIONS ] && cat $CATKIN_OPTIONS ) && catkin_make run_tests && catkin_test_results
 
 after_success:
   - coveralls --data_file="$COVERAGE_FILE"

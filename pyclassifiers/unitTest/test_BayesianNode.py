@@ -59,7 +59,7 @@ class BayesianNodeTest(unittest.TestCase):
         self.assertEqual(3, testNode.valuesToIndex({"a": True, "b": True}))
 
         # test many (5)
-        self.five_element_truth_table = [
+        five_element_truth_table = [
             {"a": False, "b": False, "c":False, "d":False, "e":False},
             {"a": False, "b": False, "c":False, "d":False, "e":True},
             {"a": False, "b": False, "c":False, "d":True, "e":False},
@@ -94,8 +94,8 @@ class BayesianNodeTest(unittest.TestCase):
             {"a": True, "b": True, "c":True, "d":True, "e":True}
         ]
         testNode = BayesianNode.BayesianNode("testName", ["a", "b", "e", "d", "c"])
-        for x in range(len(self.five_element_truth_table)):
-            self.assertEqual(x, testNode.valuesToIndex(self.five_element_truth_table[x]))
+        for x in range(len(five_element_truth_table)):
+            self.assertEqual(x, testNode.valuesToIndex(five_element_truth_table[x]))
         
 
     def test_accessTable(self):
@@ -127,15 +127,49 @@ class BayesianNodeTest(unittest.TestCase):
 
         # test many (5)
         testNode = BayesianNode.BayesianNode("q", ["a", "b", "c", "d", "e"])
+        five_element_truth_table = [
+            {"a": False, "b": False, "c":False, "d":False, "e":False},
+            {"a": False, "b": False, "c":False, "d":False, "e":True},
+            {"a": False, "b": False, "c":False, "d":True, "e":False},
+            {"a": False, "b": False, "c":False, "d":True, "e":True},
+            {"a": False, "b": False, "c":True, "d":False, "e":False},
+            {"a": False, "b": False, "c":True, "d":False, "e":True},
+            {"a": False, "b": False, "c":True, "d":True, "e":False},
+            {"a": False, "b": False, "c":True, "d":True, "e":True},
+            {"a": False, "b": True, "c":False, "d":False, "e":False},
+            {"a": False, "b": True, "c":False, "d":False, "e":True},
+            {"a": False, "b": True, "c":False, "d":True, "e":False},
+            {"a": False, "b": True, "c":False, "d":True, "e":True},
+            {"a": False, "b": True, "c":True, "d":False, "e":False},
+            {"a": False, "b": True, "c":True, "d":False, "e":True},
+            {"a": False, "b": True, "c":True, "d":True, "e":False},
+            {"a": False, "b": True, "c":True, "d":True, "e":True},
+            {"a": True, "b": False, "c":False, "d":False, "e":False},
+            {"a": True, "b": False, "c":False, "d":False, "e":True},
+            {"a": True, "b": False, "c":False, "d":True, "e":False},
+            {"a": True, "b": False, "c":False, "d":True, "e":True},
+            {"a": True, "b": False, "c":True, "d":False, "e":False},
+            {"a": True, "b": False, "c":True, "d":False, "e":True},
+            {"a": True, "b": False, "c":True, "d":True, "e":False},
+            {"a": True, "b": False, "c":True, "d":True, "e":True},
+            {"a": True, "b": True, "c":False, "d":False, "e":False},
+            {"a": True, "b": True, "c":False, "d":False, "e":True},
+            {"a": True, "b": True, "c":False, "d":True, "e":False},
+            {"a": True, "b": True, "c":False, "d":True, "e":True},
+            {"a": True, "b": True, "c":True, "d":False, "e":False},
+            {"a": True, "b": True, "c":True, "d":False, "e":True},
+            {"a": True, "b": True, "c":True, "d":True, "e":False},
+            {"a": True, "b": True, "c":True, "d":True, "e":True}
+        ]
         # creating table of Pr(q=F | a,b,c,d,e), Pr(q=T | a,b,c,d,e) where the values of a-e
-        # are stored in self.five_element_truth_table
+        # are stored in five_element_truth_table
         self.five_element_truth_table_values = [
             ((2 * x / 1000), (2 * x + 1) / 1000) for x in range(len(self.five_element_truth_table))
         ]
         testNode.table = self.five_element_truth_table_values
         currentDict = None
-        for x in range(len(self.five_element_truth_table)):
-            currentDict = self.five_element_truth_table[x]
+        for x in range(len(five_element_truth_table)):
+            currentDict = five_element_truth_table[x]
             self.assertEqual(self.five_element_truth_table_values[x],
                 (testNode.accessTable(currentDict, False), testNode.accessTable(currentDict, True)))
 

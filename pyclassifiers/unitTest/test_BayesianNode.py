@@ -22,7 +22,7 @@ class BayesianNodeTest(unittest.TestCase):
     def test_constructor(self):
         testNode = BayesianNode.BayesianNode("testName", [])
         self.assertEqual("testName", testNode.name)
-        self.assertEqual(5, testNode.dependentRV)
+        self.assertEqual(None, testNode.dependentRV)
         self.assertEqual(None, testNode.table)
 
 if __name__ == "__main__":

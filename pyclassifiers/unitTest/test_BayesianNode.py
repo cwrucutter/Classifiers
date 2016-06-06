@@ -163,14 +163,14 @@ class BayesianNodeTest(unittest.TestCase):
         ]
         # creating table of Pr(q=F | a,b,c,d,e), Pr(q=T | a,b,c,d,e) where the values of a-e
         # are stored in five_element_truth_table
-        self.five_element_truth_table_values = [
-            ((2 * x / 1000), (2 * x + 1) / 1000) for x in range(len(self.five_element_truth_table))
+        five_element_truth_table_values = [
+            ((2 * x / 1000), (2 * x + 1) / 1000) for x in range(len(five_element_truth_table))
         ]
-        testNode.table = self.five_element_truth_table_values
+        testNode.table = five_element_truth_table_values
         currentDict = None
         for x in range(len(five_element_truth_table)):
             currentDict = five_element_truth_table[x]
-            self.assertEqual(self.five_element_truth_table_values[x],
+            self.assertEqual(five_element_truth_table_values[x],
                 (testNode.accessTable(currentDict, False), testNode.accessTable(currentDict, True)))
 
 

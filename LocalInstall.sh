@@ -14,7 +14,7 @@ source /opt/ros/$ROS_DISTRO/setup.bash
 sudo rosdep init
 rosdep update
 
-
+sudo apt-get install python-pip
 sudo pip install requests[security]
 sudo pip install --upgrade pip
 sudo apt-get install -y -qq lcov curl

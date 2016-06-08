@@ -1,31 +1,104 @@
 
+# SYSTEM IMPORTS
+from operator import itemgetter
+
+# PYTHON PROJECT IMPORTS
+from StateFunctor import StateFunctor
+
+
 class BayesianNode(object):
-    def __init__(self, name, dependencies):
+    """
+        A Bayesian Node is an object that stores the probability of a random variable
+        conditioned upon a set of other random variables.
+    """
+
+    def __init__(self, name, nameStateFunctor, dependencies):
+        """
+            Constructs a BayesianNode object.
+
+            Keyword arguments:
+            name         -- the random variable this Bayesian Node is representing (string)
+            dependencies -- a list of random variables that name is conditioned upon.
+        """
+
         assert isinstance(name, str)
+        assert issubclass(nameStateFunctor.__class__, StateFunctor)
         assert isinstance(dependencies, list)
-        assert (len(dependencies) > 0)
+        assert (len(dependencies) >= 0)
 
         self.name = name
-        (self.dependencies, self.table) = self.generateTable(dependencies)
+        self.numRows = reduce(lambda rowSum, numDepStates: rowSum * numDepStates,
+                              [len(tup[1]) for tup in dependencies], 1)
+        self.nameStateFunctor = nameStateFunctor
+        (self.dependencies, self.table) = self.generateTable(dependencies, nameStateFunctor)
 
-    def generateTable(self, dependencies):
-        sortedDependencies = sorted(dependencies)
-        truthTable = [(0, 0) for index in range(2 ** len(sortedDependencies))]
+    def generateTable(self, dependencies, nameStateFunctor):
+        """
+            Generates the empty table of condition probabilities. Should be called once
+            by the constructor.
+
+            Keyword arguments:
+            dependencies -- a list of random variables that name is conditioned upon.
+        """
+        sortedDependencies = sorted(dependencies, key=lambda depName: depName[0])
+        sortedDependencies = sorted(sortedDependencies, key=lambda numDepStates: len(numDepStates[1]), reverse=True)
+        # generate empty table of (Pr(name=F | dependencies), Pr(name=T | dependencies)) tuples.
+        # use bitwise lshift (left shift) operator for speed.
+        # number of rows in the table = 2 ** <number_of_variables>
+        truthTable = [tuple(0 for i in range(len(nameStateFunctor))) for index in range(self.numRows)]
         return (sortedDependencies, truthTable)
 
     def valuesToIndex(self, depValues):
+        """
+            Converts an expression of dependencies into the index in the table.
+
+            Keyword argument:
+            depValues -- a dictionary of each dependency with state values.
+        """
+
+        # make this assertion in case valuesToIndex is called by something other
+        # than self.accessTable()
         assert isinstance(depValues, dict)
+
         index = 0
+        depStateFunctor = None
+        depValue = None
+
+        # the size of each "jump" in the truth table. Each variable spans a certain
+        # number of rows in the truth table per column
         base = 1
+
+        # run from least significant bit to most significant bit (backwards through list)
+        # remember self.dependencies is sorted, so be consistent with this scheme.
         for x in range(len(self.dependencies) - 1, -1, -1):
-            assert (self.dependencies[x] in depValues)
-            if depValues[self.dependencies[x]]:
-                index += base
-            base *= 2
+
+            # need complete vector of conditional variables
+            assert (self.dependencies[x][0] in depValues)
+
+            # get the object to hash them and check that this object can hash them
+            depStateFunctor = self.dependencies[x][1]
+            assert issubclass(depStateFunctor.__class__, StateFunctor)
+
+            # the given value of the conditional variable
+            depValue = depValues[self.dependencies[x][0]]
+
+            
+            index += (depStateFunctor.hash(depValue) * base)
+
+            # update the base. This is the product of the number of possible states
+            # for each variable of every lesser significant bit in the vector.
+            base *= len(self.dependencies[x][1])
         return index
 
     def accessTable(self, depValues, varValue):
-        assert (varValue or not varValue)
-        assert isinstance(depValues, dict)
-        conditionalProb = self.table[self.valuesToIndex(depValues)][varValue]
-        return conditionalProb
+        """
+            Get the value from the table.
+
+            Keyword arguments:
+            depValues -- a dictionary of each dependency with state values.
+            varValue  -- The state value of the variable this node is representing.
+        """
+        return self.table[self.valuesToIndex(depValues)]\
+                [self.nameStateFunctor.hash(varValue)]
+
+    # def train(self, )

@@ -3,12 +3,15 @@ export CI_SOURCE_PATH=$(pwd)
 export ROSINSTALL_FILE=$CI_SOURCE_PATH/dependencies.rosinstall
 export CATKIN_OPTIONS=$CI_SOURCE_PATH/catkin.options
 export ROS_PARALLEL_JOBS='-j8 -l6'
+export NOSE_WITH_COVERAGE='ON'
+export NOSE_COVER_INCLUSIVE='ON'
+export NOSE_COVER_PACKAGE=$CI_SOURCE_PATH/pyclassifiers/scripts
 
 source /opt/ros/$ROS_DISTRO/setup.bash
 sudo rosdep init
 rosdep update
 
-sudo pip install --upgrade pip
+# sudo pip install --upgrade pip
 
 
 mkdir -p ~/catkin_ws/src

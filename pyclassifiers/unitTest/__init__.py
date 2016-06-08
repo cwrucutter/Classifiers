@@ -1,3 +1,6 @@
 
-import test_testFile
+import test_StateFunctors
+import test_BinaryBayesianNode
 import test_BayesianNode
+import test_BayesianNetwork
+

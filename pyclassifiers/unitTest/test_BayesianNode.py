@@ -13,92 +13,165 @@ currentDir = os.path.dirname(os.path.realpath(__file__))
 scriptsDir = os.path.abspath(os.path.join(currentDir, "..", ".."))
 sys.path.extend([currentDir, scriptsDir])
 
-print("sys.path: %s" % sys.path)
-
 # PYTHON PROJECT IMPORTS
 import BayesianNode
+import TestFunctors
 
 class BayesianNodeTest(unittest.TestCase):
 
     def test_constructor(self):
+        # test 0 dependencies
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(), [])
+        self.assertEqual("testName", testNode.name)
+        self.assertEqual(0, len(testNode.dependencies))
+        self.assertEqual([], testNode.dependencies)
+        self.assertEqual(1, len(testNode.table))
+        self.assertEqual([(0, 0)], testNode.table)
+
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.EyeColorFunctor(), [])
+        self.assertEqual([(0, 0, 0, 0)], testNode.table)
+
         # test 1 input
-        testNode = BayesianNode.BayesianNode("testName", ["a"])
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
+                                             [("a", TestFunctors.EyeColorFunctor())])
         self.assertEqual("testName", testNode.name)
         self.assertEqual(1, len(testNode.dependencies))
-        self.assertEqual(["a"], testNode.dependencies)
-        self.assertEqual(2, len(testNode.table))
-        self.assertEqual([(0, 0), (0, 0)], testNode.table)
+        self.assertEqual([("a", TestFunctors.EyeColorFunctor())], testNode.dependencies)
+        self.assertEqual(4, len(testNode.table))
+        self.assertEqual([(0, 0), (0, 0), (0, 0), (0,0)], testNode.table)
+
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.HairColorFunctor(),
+                                              [("a", TestFunctors.EyeColorFunctor())])
+        self.assertEqual(1, len(testNode.dependencies))
+        self.assertEqual([("a", TestFunctors.EyeColorFunctor())], testNode.dependencies)
+        self.assertEqual(4, len(testNode.table))
+        self.assertEqual([(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)], testNode.table)
 
         # test 2 input
-        testNode = BayesianNode.BayesianNode("testName", ["b", "a"])
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
+                                             [
+                                              ("b", TestFunctors.EyeColorFunctor()),
+                                              ("a", TestFunctors.HairColorFunctor())
+                                             ])
         self.assertEqual("testName", testNode.name)
         self.assertEqual(2, len(testNode.dependencies))
-        self.assertEqual(["a", "b"], testNode.dependencies)
-        self.assertEqual(4, len(testNode.table))
-        self.assertEqual([(0, 0), (0, 0), (0, 0), (0, 0)], testNode.table)
+        self.assertEqual([("b", TestFunctors.EyeColorFunctor()), ("a", TestFunctors.HairColorFunctor())], \
+            testNode.dependencies)
+        self.assertEqual(12, len(testNode.table))
+        self.assertEqual([(0, 0) for i in range(12)], testNode.table)
 
         # test many (5)
-        testNode = BayesianNode.BayesianNode("testName", ["a", "b", "e", "d", "c"])
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
+            [("a", TestFunctors.BooleanFunctor()), ("b", TestFunctors.BooleanFunctor()),
+             ("e", TestFunctors.EyeColorFunctor()), ("d", TestFunctors.HairColorFunctor()),
+             ("c", TestFunctors.EyeColorFunctor())])
         self.assertEqual("testName", testNode.name)
         self.assertEqual(5, len(testNode.dependencies))
-        self.assertEqual(["a", "b", "c", "d", "e"], testNode.dependencies)
-        self.assertEqual(32, len(testNode.table))
-        self.assertEqual([(0, 0) for x in range(32)], testNode.table)
+        self.assertEqual([("c", TestFunctors.EyeColorFunctor()), ("e", TestFunctors.EyeColorFunctor()),
+                          ("d", TestFunctors.HairColorFunctor()), ("a", TestFunctors.BooleanFunctor()),
+                          ("b", TestFunctors.BooleanFunctor())], testNode.dependencies)
+        self.assertEqual(192, len(testNode.table))
+        self.assertEqual([(0, 0) for x in range(192)], testNode.table)
 
     def test_valuesToIndex(self):
+        # test 0 input
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(), [])
+        self.assertEqual(0, testNode.valuesToIndex({}))
+
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.EyeColorFunctor(), [])
+        self.assertEqual(0, testNode.valuesToIndex({}))
+
         # test 1
-        testNode = BayesianNode.BayesianNode("testName", ["a"])
-        self.assertEqual(0, testNode.valuesToIndex({"a": False}))
-        self.assertEqual(1, testNode.valuesToIndex({"a": True}))
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
+                                             [("a", TestFunctors.EyeColorFunctor())])
+        eyeColors = TestFunctors.EyeColorFunctor().getAllStates()
+        self.assertEqual(0, testNode.valuesToIndex({"a": eyeColors[0]}))
+        self.assertEqual(1, testNode.valuesToIndex({"a": eyeColors[1]}))
+        self.assertEqual(2, testNode.valuesToIndex({"a": eyeColors[2]}))
+        self.assertEqual(3, testNode.valuesToIndex({"a": eyeColors[3]}))
 
         # test 2
-        testNode = BayesianNode.BayesianNode("testName", ["a", "b"])
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
+                                             [("a", TestFunctors.BooleanFunctor()), ("b",
+                                              TestFunctors.BooleanFunctor())])
+
         self.assertEqual(0, testNode.valuesToIndex({"a": False, "b": False}))
         self.assertEqual(1, testNode.valuesToIndex({"a": False, "b": True}))
         self.assertEqual(2, testNode.valuesToIndex({"a": True, "b": False}))
         self.assertEqual(3, testNode.valuesToIndex({"a": True, "b": True}))
 
-        # test many (5)
-        five_element_truth_table = [
-            {"a": False, "b": False, "c":False, "d":False, "e":False},
-            {"a": False, "b": False, "c":False, "d":False, "e":True},
-            {"a": False, "b": False, "c":False, "d":True, "e":False},
-            {"a": False, "b": False, "c":False, "d":True, "e":True},
-            {"a": False, "b": False, "c":True, "d":False, "e":False},
-            {"a": False, "b": False, "c":True, "d":False, "e":True},
-            {"a": False, "b": False, "c":True, "d":True, "e":False},
-            {"a": False, "b": False, "c":True, "d":True, "e":True},
-            {"a": False, "b": True, "c":False, "d":False, "e":False},
-            {"a": False, "b": True, "c":False, "d":False, "e":True},
-            {"a": False, "b": True, "c":False, "d":True, "e":False},
-            {"a": False, "b": True, "c":False, "d":True, "e":True},
-            {"a": False, "b": True, "c":True, "d":False, "e":False},
-            {"a": False, "b": True, "c":True, "d":False, "e":True},
-            {"a": False, "b": True, "c":True, "d":True, "e":False},
-            {"a": False, "b": True, "c":True, "d":True, "e":True},
-            {"a": True, "b": False, "c":False, "d":False, "e":False},
-            {"a": True, "b": False, "c":False, "d":False, "e":True},
-            {"a": True, "b": False, "c":False, "d":True, "e":False},
-            {"a": True, "b": False, "c":False, "d":True, "e":True},
-            {"a": True, "b": False, "c":True, "d":False, "e":False},
-            {"a": True, "b": False, "c":True, "d":False, "e":True},
-            {"a": True, "b": False, "c":True, "d":True, "e":False},
-            {"a": True, "b": False, "c":True, "d":True, "e":True},
-            {"a": True, "b": True, "c":False, "d":False, "e":False},
-            {"a": True, "b": True, "c":False, "d":False, "e":True},
-            {"a": True, "b": True, "c":False, "d":True, "e":False},
-            {"a": True, "b": True, "c":False, "d":True, "e":True},
-            {"a": True, "b": True, "c":True, "d":False, "e":False},
-            {"a": True, "b": True, "c":True, "d":False, "e":True},
-            {"a": True, "b": True, "c":True, "d":True, "e":False},
-            {"a": True, "b": True, "c":True, "d":True, "e":True}
-        ]
-        testNode = BayesianNode.BayesianNode("testName", ["a", "b", "e", "d", "c"])
-        for x in range(len(five_element_truth_table)):
-            self.assertEqual(x, testNode.valuesToIndex(five_element_truth_table[x]))
-        
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.EyeColorFunctor(),
+                                             [
+                                                ("a", TestFunctors.EyeColorFunctor()),
+                                                ("b", TestFunctors.HairColorFunctor())
+                                             ])
+        eyes = TestFunctors.EyeColorFunctor().getAllStates()
+        hair = TestFunctors.HairColorFunctor().getAllStates()
 
+        self.assertEqual(0, testNode.valuesToIndex({"a":eyes[0], "b":hair[0]}))
+        self.assertEqual(1, testNode.valuesToIndex({"a":eyes[0], "b":hair[1]}))
+        self.assertEqual(2, testNode.valuesToIndex({"a":eyes[0], "b":hair[2]}))
+        self.assertEqual(3, testNode.valuesToIndex({"a":eyes[1], "b":hair[0]}))
+        self.assertEqual(4, testNode.valuesToIndex({"a":eyes[1], "b":hair[1]}))
+        self.assertEqual(5, testNode.valuesToIndex({"a":eyes[1], "b":hair[2]}))
+        self.assertEqual(6, testNode.valuesToIndex({"a":eyes[2], "b":hair[0]}))
+        self.assertEqual(7, testNode.valuesToIndex({"a":eyes[2], "b":hair[1]}))
+        self.assertEqual(8, testNode.valuesToIndex({"a":eyes[2], "b":hair[2]}))
+        self.assertEqual(9, testNode.valuesToIndex({"a":eyes[3], "b":hair[0]}))
+        self.assertEqual(10, testNode.valuesToIndex({"a":eyes[3], "b":hair[1]}))
+        self.assertEqual(11, testNode.valuesToIndex({"a":eyes[3], "b":hair[2]}))
+
+        # test 3
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
+            [("x", TestFunctors.HairColorFunctor()), ("y", TestFunctors.BooleanFunctor()),
+             ("z", TestFunctors.BooleanFunctor())])
+        booleans = TestFunctors.BooleanFunctor().getAllStates()
+        index = 0
+        for h in hair:
+            for b_1 in booleans:
+                for b_2 in booleans:
+                    self.assertEqual(index, testNode.valuesToIndex({"x":h, "y":b_1, "z":b_2}))
+                    index += 1
+
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
+            [("x", TestFunctors.HairColorFunctor()), ("y", TestFunctors.BooleanFunctor()),
+             ("z", TestFunctors.EyeColorFunctor())])
+        booleans = TestFunctors.BooleanFunctor().getAllStates()
+        index = 0
+        print(testNode.dependencies)
+        for e in eyes:
+            for h in hair:
+                for b in booleans:
+                    print("z: %s,\tx: %s,\ty: %s" % (e, h, b))
+                    self.assertEqual(index, testNode.valuesToIndex({"x":h, "y":b, "z":e}))
+                    index += 1
+
+        # test many (5)
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
+            [("a", TestFunctors.BooleanFunctor()), ("b", TestFunctors.BooleanFunctor()),
+             ("e", TestFunctors.EyeColorFunctor()), ("d", TestFunctors.HairColorFunctor()),
+             ("c", TestFunctors.EyeColorFunctor())])
+        booleans = TestFunctors.BooleanFunctor().getAllStates()
+        index = 0
+        for eye_1 in eyes:
+            for eye_2 in eyes:
+                for h in hair:
+                    for b_1 in booleans:
+                        for b_2 in booleans:
+                            self.assertEqual(index,
+                                testNode.valuesToIndex({"a":b_1, "b":b_2,
+                                    "c":eye_1, "d":h, "e":eye_2}))
+                            index += 1
+
+'''
     def test_accessTable(self):
+        # test 0
+        testNode = BayesianNode.BayesianNode("q", [])
+        testNode.table = [#Pr(q=F), Pr(q=T)
+                            (0.7,     0.3)]
+        self.assertEqual(0.7, testNode.accessTable({}, False))
+        self.assertEqual(0.3, testNode.accessTable({}, True))
+
         # test 1
         testNode = BayesianNode.BayesianNode("q", ["a"])
         testNode.table = [# Pr(q=F | a), Pr(q=T | a)
@@ -172,7 +245,7 @@ class BayesianNodeTest(unittest.TestCase):
             currentDict = five_element_truth_table[x]
             self.assertEqual(five_element_truth_table_values[x],
                 (testNode.accessTable(currentDict, False), testNode.accessTable(currentDict, True)))
-
+'''
 
 if __name__ == "__main__":
     rostest.rosrun("pyclassifiers", "BayesianNodeTest", BayesianNodeTest)

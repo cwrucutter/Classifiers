@@ -26,10 +26,10 @@ class BayesianNodeTest(unittest.TestCase):
         self.assertEqual(0, len(testNode.dependencies))
         self.assertEqual([], testNode.dependencies)
         self.assertEqual(1, len(testNode.table))
-        self.assertEqual([(0, 0)], testNode.table)
+        self.assertEqual([[0, 0]], testNode.table)
 
         testNode = BayesianNode.BayesianNode("testName", TestFunctors.EyeColorFunctor(), [])
-        self.assertEqual([(0, 0, 0, 0)], testNode.table)
+        self.assertEqual([[0, 0, 0, 0]], testNode.table)
 
         # test 1 input
         testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
@@ -38,14 +38,14 @@ class BayesianNodeTest(unittest.TestCase):
         self.assertEqual(1, len(testNode.dependencies))
         self.assertEqual([("a", TestFunctors.EyeColorFunctor())], testNode.dependencies)
         self.assertEqual(4, len(testNode.table))
-        self.assertEqual([(0, 0), (0, 0), (0, 0), (0,0)], testNode.table)
+        self.assertEqual([[0, 0], [0, 0], [0, 0], [0,0]], testNode.table)
 
         testNode = BayesianNode.BayesianNode("testName", TestFunctors.HairColorFunctor(),
                                               [("a", TestFunctors.EyeColorFunctor())])
         self.assertEqual(1, len(testNode.dependencies))
         self.assertEqual([("a", TestFunctors.EyeColorFunctor())], testNode.dependencies)
         self.assertEqual(4, len(testNode.table))
-        self.assertEqual([(0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0)], testNode.table)
+        self.assertEqual([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]], testNode.table)
 
         # test 2 input
         testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
@@ -58,7 +58,7 @@ class BayesianNodeTest(unittest.TestCase):
         self.assertEqual([("b", TestFunctors.EyeColorFunctor()), ("a", TestFunctors.HairColorFunctor())], \
             testNode.dependencies)
         self.assertEqual(12, len(testNode.table))
-        self.assertEqual([(0, 0) for i in range(12)], testNode.table)
+        self.assertEqual([[0, 0] for i in range(12)], testNode.table)
 
         # test many (5)
         testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
@@ -71,7 +71,7 @@ class BayesianNodeTest(unittest.TestCase):
                           ("d", TestFunctors.HairColorFunctor()), ("a", TestFunctors.BooleanFunctor()),
                           ("b", TestFunctors.BooleanFunctor())], testNode.dependencies)
         self.assertEqual(192, len(testNode.table))
-        self.assertEqual([(0, 0) for x in range(192)], testNode.table)
+        self.assertEqual([[0, 0] for x in range(192)], testNode.table)
 
     def test_valuesToIndex(self):
         # test 0 input
@@ -163,27 +163,30 @@ class BayesianNodeTest(unittest.TestCase):
                                     "c":eye_1, "d":h, "e":eye_2}))
                             index += 1
 
-'''
     def test_accessTable(self):
         # test 0
-        testNode = BayesianNode.BayesianNode("q", [])
+        testNode = BayesianNode.BayesianNode("q", TestFunctors.BooleanFunctor(), [])
         testNode.table = [#Pr(q=F), Pr(q=T)
                             (0.7,     0.3)]
         self.assertEqual(0.7, testNode.accessTable({}, False))
         self.assertEqual(0.3, testNode.accessTable({}, True))
 
         # test 1
-        testNode = BayesianNode.BayesianNode("q", ["a"])
-        testNode.table = [# Pr(q=F | a), Pr(q=T | a)
-                                 (0.01,        0.000234), # a:F
-                                 (0.5,         0.092)]    # a:T
-        self.assertEqual(0.01, testNode.accessTable({"a": False}, False))
-        self.assertEqual(0.000234, testNode.accessTable({"a": False}, True))
-        self.assertEqual(0.5, testNode.accessTable({"a": True}, False))
-        self.assertEqual(0.092, testNode.accessTable({"a": True}, True))
+        testNode = BayesianNode.BayesianNode("q", TestFunctors.HairColorFunctor(),
+            [("a", TestFunctors.BooleanFunctor())])
+        testNode.table = [# Pr(q="brown" | a), Pr(q="blonde" | a), Pr(q="black" | a)
+                                       (0.01,               0.000234,          0.394), # a:F
+                                       (0.5,                0.092,             0.55)]    # a:T
+        self.assertEqual(0.01, testNode.accessTable({"a": False}, "brown"))
+        self.assertEqual(0.000234, testNode.accessTable({"a": False}, "blonde"))
+        self.assertEqual(0.394, testNode.accessTable({"a": False}, "black"))
+        self.assertEqual(0.5, testNode.accessTable({"a": True}, "brown"))
+        self.assertEqual(0.092, testNode.accessTable({"a": True}, "blonde"))
+        self.assertEqual(0.55, testNode.accessTable({"a": True}, "black"))
 
         # test 2
-        testNode = BayesianNode.BayesianNode("q", ["a", "b"])
+        testNode = BayesianNode.BayesianNode("q", TestFunctors.BooleanFunctor(),
+            [("a", TestFunctors.BooleanFunctor()), ("b", TestFunctors.BooleanFunctor())])
         testNode.table = [#Pr(q=F | a, b), Pr(q=T | a, b)
                                 (0.1,            0.2), # a:F, b:F
                                 (0.3,            0.4), # a:F, b:T
@@ -199,53 +202,27 @@ class BayesianNodeTest(unittest.TestCase):
         self.assertEqual(0.8, testNode.accessTable({"a":True, "b": True}, True))
 
         # test many (5)
-        testNode = BayesianNode.BayesianNode("q", ["a", "b", "c", "d", "e"])
-        five_element_truth_table = [
-            {"a": False, "b": False, "c":False, "d":False, "e":False},
-            {"a": False, "b": False, "c":False, "d":False, "e":True},
-            {"a": False, "b": False, "c":False, "d":True, "e":False},
-            {"a": False, "b": False, "c":False, "d":True, "e":True},
-            {"a": False, "b": False, "c":True, "d":False, "e":False},
-            {"a": False, "b": False, "c":True, "d":False, "e":True},
-            {"a": False, "b": False, "c":True, "d":True, "e":False},
-            {"a": False, "b": False, "c":True, "d":True, "e":True},
-            {"a": False, "b": True, "c":False, "d":False, "e":False},
-            {"a": False, "b": True, "c":False, "d":False, "e":True},
-            {"a": False, "b": True, "c":False, "d":True, "e":False},
-            {"a": False, "b": True, "c":False, "d":True, "e":True},
-            {"a": False, "b": True, "c":True, "d":False, "e":False},
-            {"a": False, "b": True, "c":True, "d":False, "e":True},
-            {"a": False, "b": True, "c":True, "d":True, "e":False},
-            {"a": False, "b": True, "c":True, "d":True, "e":True},
-            {"a": True, "b": False, "c":False, "d":False, "e":False},
-            {"a": True, "b": False, "c":False, "d":False, "e":True},
-            {"a": True, "b": False, "c":False, "d":True, "e":False},
-            {"a": True, "b": False, "c":False, "d":True, "e":True},
-            {"a": True, "b": False, "c":True, "d":False, "e":False},
-            {"a": True, "b": False, "c":True, "d":False, "e":True},
-            {"a": True, "b": False, "c":True, "d":True, "e":False},
-            {"a": True, "b": False, "c":True, "d":True, "e":True},
-            {"a": True, "b": True, "c":False, "d":False, "e":False},
-            {"a": True, "b": True, "c":False, "d":False, "e":True},
-            {"a": True, "b": True, "c":False, "d":True, "e":False},
-            {"a": True, "b": True, "c":False, "d":True, "e":True},
-            {"a": True, "b": True, "c":True, "d":False, "e":False},
-            {"a": True, "b": True, "c":True, "d":False, "e":True},
-            {"a": True, "b": True, "c":True, "d":True, "e":False},
-            {"a": True, "b": True, "c":True, "d":True, "e":True}
-        ]
-        # creating table of Pr(q=F | a,b,c,d,e), Pr(q=T | a,b,c,d,e) where the values of a-e
-        # are stored in five_element_truth_table
-        five_element_truth_table_values = [
-            ((2 * x / 1000), (2 * x + 1) / 1000) for x in range(len(five_element_truth_table))
-        ]
-        testNode.table = five_element_truth_table_values
-        currentDict = None
-        for x in range(len(five_element_truth_table)):
-            currentDict = five_element_truth_table[x]
-            self.assertEqual(five_element_truth_table_values[x],
-                (testNode.accessTable(currentDict, False), testNode.accessTable(currentDict, True)))
-'''
+        testNode = BayesianNode.BayesianNode("testName", TestFunctors.BooleanFunctor(),
+            [("a", TestFunctors.BooleanFunctor()), ("b", TestFunctors.BooleanFunctor()),
+             ("e", TestFunctors.EyeColorFunctor()), ("d", TestFunctors.HairColorFunctor()),
+             ("c", TestFunctors.EyeColorFunctor())])
+        booleans = TestFunctors.BooleanFunctor().getAllStates()
+        eyes = TestFunctors.EyeColorFunctor().getAllStates()
+        hair = TestFunctors.HairColorFunctor().getAllStates()
+        table = [(2 * x, 2 * x + 1) for x in range(len(testNode.table))]
+        testNode.table = table
+        index = 0
+        for eye_1 in eyes:
+            for eye_2 in eyes:
+                for h in hair:
+                    for b_1 in booleans:
+                        for b_2 in booleans:
+                            self.assertEqual(table[index],
+                                (testNode.accessTable({"a":b_1, "b":b_2,
+                                    "c":eye_1, "d":h, "e":eye_2}, False),
+                                 testNode.accessTable({"a":b_1, "b":b_2,
+                                    "c":eye_1, "d":h, "e":eye_2}, True)))
+                            index += 1
 
 if __name__ == "__main__":
     rostest.rosrun("pyclassifiers", "BayesianNodeTest", BayesianNodeTest)

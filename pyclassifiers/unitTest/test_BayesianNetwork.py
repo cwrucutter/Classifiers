@@ -29,3 +29,6 @@ class BayesianNetworkTest(unittest.TestCase):
 
         # test many input
 '''
+
+if __name__ == "__main__":
+    rostest.rosrun("pyclassifiers", "BayesianNetworkTest", BayesianNetworkTest)

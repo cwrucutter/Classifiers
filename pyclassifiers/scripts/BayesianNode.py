@@ -31,6 +31,11 @@ class BayesianNode(object):
                               [len(tup[1]) for tup in dependencies], 1)
         self.nameStateFunctor = nameStateFunctor
         (self.dependencies, self.table) = self.generateTable(dependencies, nameStateFunctor)
+        if len(self.table) > 1:
+            self.totalProbabilities = (0 for x in range(len(self.nameStateFunctor)))
+        if len(self.dependencies) > 0:
+            self.parents = {x[0]: None for x in self.dependencies}
+        self.children = None
 
     def generateTable(self, dependencies, nameStateFunctor):
         """
@@ -45,7 +50,7 @@ class BayesianNode(object):
         # generate empty table of (Pr(name=F | dependencies), Pr(name=T | dependencies)) tuples.
         # use bitwise lshift (left shift) operator for speed.
         # number of rows in the table = 2 ** <number_of_variables>
-        truthTable = [tuple(0 for i in range(len(nameStateFunctor))) for index in range(self.numRows)]
+        truthTable = [[0 for i in range(len(nameStateFunctor))] for index in range(self.numRows)]
         return (sortedDependencies, truthTable)
 
     def valuesToIndex(self, depValues):
@@ -100,5 +105,17 @@ class BayesianNode(object):
         """
         return self.table[self.valuesToIndex(depValues)]\
                 [self.nameStateFunctor.hash(varValue)]
+
+    def pr(self, state):
+        """
+            Calculate the probability that the variable this node is representing
+            is a certain state.
+
+            Keyword arguments:
+            state -- the state that the variable of this node should be
+        """
+        if len(self.table) > 1:
+            return self.totalProbabilities[self.nameStateFunctor.hash(state)]
+        return self.table[0][self.nameStateFunctor.hash(state)]
 
     # def train(self, )

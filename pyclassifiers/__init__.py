@@ -6,6 +6,8 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "scrip
 
 import BayesianNetwork
 import StateFunctor
+import NaiveBayesClassifier
 # PYTHON PROJECT IMPORTS
 from BayesianNetwork import BayesianNetwork
 from StateFunctor import StateFunctor
+from NaiveBayesClassifier import NaiveBayesClassifier

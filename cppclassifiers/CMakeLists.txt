@@ -1,45 +1,87 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(basic_ros_pkg)
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-find_package(catkin REQUIRED
-  roscpp
-  std_msgs
-  message_generation
-  )
+message("RUNNING CPPCLASSIFIERS CMAKELISTS")
 
-################################################
-## Declare ROS messages, services and actions ##
-################################################
+set( CMAKE_VERBOSE_MAKEFILE "ON" )
 
-## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  StringIntTuple.msg
+# check c++11 / c++0x
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "-std=c++11")
+elseif(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS "-std=c++0x")
+else()
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+endif()
+
+get_filename_component( CMAKE_LOCAL_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/cmake ABSOLUTE )
+
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_LOCAL_ROOT}/modules )
+
+project( cppclassifiers )
+
+
+get_filename_component( SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/cpp/src ABSOLUTE )
+
+get_filename_component( INC_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/cpp/include ABSOLUTE )
+
+get_filename_component( TEST_ROOT ${SRC_ROOT}/unitTest ABSOLUTE )
+
+
+find_package( catkin REQUIRED
+    roscpp
 )
 
-## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-)
-
-###################################
-## catkin specific configuration ##
-###################################
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES basic_ros_pkg
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
 )
 
-###########
-## Build ##
-###########
 
-add_executable(basic_talker src/talker.cpp)
-target_link_libraries(basic_talker ${catkin_LIBRARIES})
-add_dependencies(basic_talker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+set( ${PROJECT_NAME}_SRCS
+    ${SRC_ROOT}/Neural/INeuron.cpp
+    ${SRC_ROOT}/Neural/Synapse.cpp
+    ${SRC_ROOT}/Neural/CppNeuron.cpp
+)
+
+set( ${PROJECT_NAME}_PUBLIC_HEADERS
+    ${INC_ROOT}/Neural/INeuron.hpp
+)
+
+set( ${PROJECT_NAME}_PRIVATE_HEADERS
+    ${INC_ROOT}/Neural/Synapse.hpp
+    ${INC_ROOT}/Neural/CppNeuron.hpp
+)
+
+set( ${PROJECT_NAME}_TEST_SRCS
+    ${TEST_ROOT}/TestFunctions.cpp
+    ${TEST_ROOT}/CppNeuron_unit.cpp
+    ${TEST_ROOT}/main.cpp
+)
+
+set( ${PROJECT_NAME}_TEST_HEADERS
+    ${TEST_ROOT}/TestFunctions.hpp
+)
+
+source_group( PublicHeaders FILES ${${PROJECT_NAME}_PUBLIC_HEADERS} )
+
+set( INCLUDE_DIRS
+    ${INC_ROOT}
+    ${SRC_ROOT}
+)
+
+include_directories( ${INCLUDE_DIRS} )
+
+add_library( ${PROJECT_NAME}
+    ${${PROJECT_NAME}_SRCS}
+    ${${PROJECT_NAME}_PUBLIC_HEADERS}
+    ${${PROJECT_NAME}_PRIVATE_HEADERS}
+)
+
+catkin_add_gtest(${PROJECT_NAME}_UNIT
+    ${${PROJECT_NAME}_TEST_SRCS}
+    ${${PROJECT_NAME}_TEST_HEADERS}
+)
+if( TARGET ${PROJECT_NAME}_UNIT )
+    target_link_libraries( ${PROJECT_NAME}_UNIT ${PROJECT_NAME} )
+endif()

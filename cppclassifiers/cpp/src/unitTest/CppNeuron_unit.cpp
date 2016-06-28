@@ -1,9 +1,9 @@
 // SYSTEM INCLUDES
-#include <gtest/gtest.h>
+
 
 // C++ PROJECT INCLUDES
-#include "Neural/CppNeuron.hpp"
-#include "unitTest/TestFunctions.hpp"
+#include "unitTest/TestFixtures/NeuronTestFixtures.hpp"
+
 
 namespace Classifiers
 {
@@ -12,18 +12,20 @@ namespace Neural
 namespace Tests
 {
 
-    TEST(CppNeuronTest, TestConstructor)
+    TEST_F(CppNeuronTest, TestNeuronConstructor)
     {
-        CppNeuron testNeuron(&Sigmoid);
-        ASSERT_NE(nullptr, &testNeuron);
-        ASSERT_EQ(0.0, testNeuron.GetActivation());
+        this->TestConstructor();
     }
 
-    TEST(CppNeuronTest, TestComputeValue)
+    TEST_F(CppNeuronTest, TestNeuronComputeValue)
     {
-        
+        this->TestComputeValue();
     }
 
+    TEST_F(CppNeuronTest, TestNeuronUpdate)
+    {
+        this->TestUpdate();
+    }
 
 } // end of namespace Tests
 } // end of namespace Neural

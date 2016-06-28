@@ -2,6 +2,9 @@
 #ifndef CLASSIFIERS_NEURAL_CPPNEURON_HPP
 #define CLASSIFIERS_NEURAL_CPPNEURON_HPP
 
+#ifndef TEST_CPPNEURON_FRIENDS
+#define TEST_CPPNEURON_FRIENDS
+#endif
 
 // SYSTEM INCLUDES
 
@@ -16,6 +19,7 @@ namespace Neural
 
     class CppNeuron : public INeuron
     {
+        TEST_CPPNEURON_FRIENDS;
         public:
 
             CppNeuron(double (*pFunc)(double));
@@ -30,7 +34,7 @@ namespace Neural
 
     };
 
-    using CppNeuronPrt = std::shared_ptr<CppNeuron>;
+    using CppNeuronPtr = std::shared_ptr<CppNeuron>;
 
 } // end of namespace Neural
 } // end of namespace Classifiers

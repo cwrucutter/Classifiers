@@ -34,10 +34,5 @@ namespace Neural
         return this->_a;
     }
 
-    double INeuron::GetBias()
-    {
-        return this->_bias;
-    }
-
 } // end of namespace Neural
 } // end of namespace Classifiers

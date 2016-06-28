@@ -2,7 +2,7 @@
 #include <math.h>
 
 // C++ PROJECT INCLUDES
-#include "unitTest/TestFunctions.hpp"
+#include "unitTest/Common/TestFunctions.hpp"
 
 namespace Classifiers
 {

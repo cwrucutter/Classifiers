@@ -42,10 +42,12 @@ set( ${PROJECT_NAME}_SRCS
     ${SRC_ROOT}/Neural/INeuron.cpp
     ${SRC_ROOT}/Neural/Synapse.cpp
     ${SRC_ROOT}/Neural/CppNeuron.cpp
+    ${SRC_ROOT}/Neural/FFNeuralNet.cpp
 )
 
 set( ${PROJECT_NAME}_PUBLIC_HEADERS
     ${INC_ROOT}/Neural/INeuron.hpp
+    ${INC_ROOT}/Neural/FFNeuralNet.hpp
 )
 
 set( ${PROJECT_NAME}_PRIVATE_HEADERS
@@ -54,13 +56,22 @@ set( ${PROJECT_NAME}_PRIVATE_HEADERS
 )
 
 set( ${PROJECT_NAME}_TEST_SRCS
-    ${TEST_ROOT}/TestFunctions.cpp
+    ${TEST_ROOT}/Common/TestFunctions.cpp
+
+    ${TEST_ROOT}/TestFixtures/NeuronTestFixtures.cpp
+    ${TEST_ROOT}/TestFixtures/NetTestFixtures.cpp
+
     ${TEST_ROOT}/CppNeuron_unit.cpp
+    ${TEST_ROOT}/FFNeuralNet_unit.cpp
     ${TEST_ROOT}/main.cpp
 )
 
 set( ${PROJECT_NAME}_TEST_HEADERS
-    ${TEST_ROOT}/TestFunctions.hpp
+    ${TEST_ROOT}/Common/TestFunctions.hpp
+    ${TEST_ROOT}/Common/FriendDeclarations.hpp
+
+    ${TEST_ROOT}/TestFixtures/NeuronTestFixtures.hpp
+    ${TEST_ROOT}/TestFixtures/NetTestFixtures.hpp
 )
 
 source_group( PublicHeaders FILES ${${PROJECT_NAME}_PUBLIC_HEADERS} )

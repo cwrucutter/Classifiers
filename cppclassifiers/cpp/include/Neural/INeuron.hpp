@@ -2,6 +2,11 @@
 #ifndef CLASSIFIERS_NEURAL_INEURON_HPP
 #define CLASSIFIERS_NEURAL_INEURON_HPP
 
+#ifndef TEST_CPPNEURON_FRIENDS
+#define TEST_CPPNEURON_FRIENDS
+#endif
+
+
 // SYSTEM INCLUDES
 #include <memory>
 #include <vector>
@@ -18,7 +23,8 @@ namespace Neural
 
     class INeuron
     {
-        friend FFNeuralNet;
+        friend class FFNeuralNet;
+        TEST_CPPNEURON_FRIENDS;
         public:
 
             INeuron();
@@ -30,8 +36,6 @@ namespace Neural
             void Update(double learningRate);
 
             double GetActivation();
-
-            double GetBias();
 
         protected:
 

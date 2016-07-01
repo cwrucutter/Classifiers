@@ -1,4 +1,5 @@
 // SYSTEM INCLUDES
+#include <random>
 #include <list>
 
 // C++ PROJECT INCLUDES
@@ -249,12 +250,12 @@ namespace Tests
         };
         this->SetupGraph(this->_pNet, params);
 
-        std::list<std::pair<std::vector<double>,
+        std::vector<std::pair<std::vector<double>,
                               std::vector<double> > > evalData =
         {
             {{1.0, 1.0}, {0.5}}
         };
-        this->_pNet->MiniBatchUpdate(evalData, 1);
+        this->_pNet->MiniBatchUpdate(evalData, 0, 1);
 
         // check _wUpdates and _deltaUpdates for each node and synapse
         std::vector<INeuronPtr> inputLayer = this->_pNet->_layers[0];
@@ -287,7 +288,7 @@ namespace Tests
                 0.00000001);
         }
 
-        this->_pNet->MiniBatchUpdate(evalData, 1);
+        this->_pNet->MiniBatchUpdate(evalData, 0, 1);
 
         inputLayer = this->_pNet->_layers[0];
         hiddenLayer = this->_pNet->_layers[1];
@@ -324,10 +325,10 @@ namespace Tests
     {
         using InputData_t = std::vector<std::pair<std::vector<double>,
                                                   std::vector<double> > >;
-        using MiniBatch_t = std::list<std::pair<std::vector<double>,
+        using MiniBatch_t = std::vector<std::pair<std::vector<double>,
                                                 std::vector<double> > >;
 
-        std::list<MiniBatch_t> testMiniBatches;
+        std::vector<MiniBatch_t> testMiniBatches;
         InputData_t inputData = {
             {{1.0, 2.0}, {10.0}},
             {{3.0, 4.0}, {20.0}},
@@ -353,7 +354,7 @@ namespace Tests
             testMiniBatches.push_back(miniBatch);
         }
 
-        std::list<MiniBatch_t> expectedMiniBatches = {
+        std::vector<MiniBatch_t> expectedMiniBatches = {
             {
                 {{1.0, 2.0}, {10.0}},
                 {{3.0, 4.0}, {20.0}}
@@ -397,6 +398,7 @@ namespace Tests
         {
             {{1.0, 1.0}, {0.5}}
         };
+
         this->_pNet->Train(evalData, 1, 1);
 
         // check _wUpdates and _deltaUpdates for each node and synapse
@@ -487,6 +489,73 @@ namespace Tests
 
         EXPECT_EQ(1, DefaultEvalFunc(evalData, this->_pNet.get()));
     }
+
+
+
+
+    /**
+    void FFNeuralNetSpeedTest::SetUp()
+    {
+        std::vector<int> layersScheme = {784, 30, 10};
+        this->_pNet = std::make_shared<FFNeuralNet>(layersScheme);
+
+        // generate 50,000 784 dimensional vectors of grayscaled values
+        this->_tData;
+        this->_testData;
+        std::default_random_engine generator;
+        std::uniform_real_distribution<double> unif(0.0, 1.0);
+        for(int i = 0; i < 30000; ++i)
+        {
+            std::vector<double> input;
+            std::vector<double> output;
+
+            for(int j = 0; j < 784; ++j)
+            {
+                input.push_back(unif(generator));
+            }
+            for(int j = 0; j < 10; ++j)
+            {
+                output.push_back((double)(int)(unif(generator) * 10));
+            }
+            this->_tData.push_back(std::make_pair(input, output));
+        }
+        for(int i = 0; i < 10000; ++i)
+        {
+            std::vector<double> input;
+            std::vector<double> output;
+
+            for(int j = 0; j < 784; ++j)
+            {
+                input.push_back(unif(generator));
+            }
+            output.push_back((double)(int)(unif(generator) * 9));
+            this->_testData.push_back(std::make_pair(input, output));
+        }
+    }
+
+    void FFNeuralNetSpeedTest::TearDown()
+    {
+    }
+
+    void FFNeuralNetSpeedTest::FFNetFeedForwardSpeedTest()
+    {
+        std::vector<int> layersScheme = {784, 30, 10};
+        std::default_random_engine generator;
+        std::normal_distribution<double> dist(0.0, 1.0);
+        std::vector<double> inputs;
+
+        for(int i = 0; i < layersScheme[0]; ++i)
+        {
+            inputs.push_back(dist(generator));
+        }
+        this->_pNet->FeedForward(inputs);
+    }
+
+    void FFNeuralNetSpeedTest::FFNetTrainSpeedTest()
+    {
+        this->_pNet->Train(this->_tData, 1, 10, this->_testData);
+    }
+    */
 
 } // end of namespace Tests
 } // end of namespace Neural

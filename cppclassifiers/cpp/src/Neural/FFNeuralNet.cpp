@@ -96,7 +96,7 @@ namespace Neural
     {
     }
 
-    std::vector<double> FFNeuralNet::FeedForward(std::vector<double> inputs)
+    std::vector<double> FFNeuralNet::FeedForward(std::vector<double>& inputs)
     {
         int inputIndex = 0;
         std::vector<double> result;
@@ -104,7 +104,7 @@ namespace Neural
         {
             if(layerIndex == 0)
             {
-                for(INeuronPtr pInputNeuron : this->_layers[layerIndex])
+                for(INeuronPtr& pInputNeuron : this->_layers[layerIndex])
                 {
                     pInputNeuron->_a = inputs[inputIndex];
                     ++inputIndex;
@@ -112,7 +112,7 @@ namespace Neural
             }
             else if(layerIndex == this->_numLayers - 1)
             {
-                for(INeuronPtr pOutputNeuron : this->_layers[layerIndex])
+                for(INeuronPtr& pOutputNeuron : this->_layers[layerIndex])
                 {
                     pOutputNeuron->ComputeValue();
                     result.push_back(pOutputNeuron->_a);
@@ -120,7 +120,7 @@ namespace Neural
             }
             else
             {
-                for(INeuronPtr pNeuron : this->_layers[layerIndex])
+                for(INeuronPtr& pNeuron : this->_layers[layerIndex])
                 {
                     pNeuron->ComputeValue();
                 }
@@ -130,12 +130,12 @@ namespace Neural
     }
 
     void FFNeuralNet::Train(std::vector<std::pair<std::vector<double>,
-                                                  std::vector<double> > > trainingData,
+                                                  std::vector<double> > >& trainingData,
                             int epochs, int miniBatchSize,
                             std::vector<std::pair<std::vector<double>,
-                                                  std::vector<double> > > testData)
+                                                  std::vector<double> > >& testData)
     {
-        using MiniBatch_t = std::list<std::pair<std::vector<double>, std::vector<double> > >;
+        //using MiniBatch_t = std::vector<std::pair<std::vector<double>, std::vector<double> > >;
         int testDataLength = 0;
         
         if(testData.size() > 0)
@@ -145,28 +145,61 @@ namespace Neural
         int n = (int)trainingData.size();
         for(int i = 0; i < epochs; ++i)
         {
-            std::list<MiniBatch_t> miniBatches;
+            //std::vector<MiniBatch_t> miniBatches;
+            //miniBatches.reserve(n / miniBatchSize);
             // shuffle trainingData
             std::random_shuffle(trainingData.begin(), trainingData.end());
             // group into list of mini batches
             for(int k = 0; k < n; k += miniBatchSize)
             {
-                MiniBatch_t miniBatch;
-                for(int l = k; l < k + miniBatchSize; ++l)
-                {
-                    miniBatch.push_back(trainingData[l]);
-                }
-                miniBatches.push_back(miniBatch);
+                //MiniBatch_t miniBatch;
+                //for(int l = k; l < k + miniBatchSize; ++l)
+                //{
+                //    miniBatch.push_back(trainingData[l]);
+                //}
+                //miniBatches.push_back(miniBatch);
+                this->MiniBatchUpdate(trainingData, k, miniBatchSize);
             }
-            for(MiniBatch_t miniBatch : miniBatches)
-            {
-                this->MiniBatchUpdate(miniBatch, miniBatchSize);
-            }
+            //for(MiniBatch_t& miniBatch : miniBatches)
+            //{
+            //    this->MiniBatchUpdate(miniBatch, miniBatchSize);
+            //}
         }
     }
 
-    void FFNeuralNet::BackPropogate(std::vector<double> inputs,
-                                    std::vector<double> expectedOutputs)
+    void FFNeuralNet::Train(std::vector<std::pair<std::vector<double>,
+                                                  std::vector<double> > >& trainingData,
+                            int epochs, int miniBatchSize)
+    {
+        //using MiniBatch_t = std::vector<std::pair<std::vector<double>, std::vector<double> > >;
+        
+        int n = (int)trainingData.size();
+        for(int i = 0; i < epochs; ++i)
+        {
+            //std::vector<MiniBatch_t> miniBatches;
+            //miniBatches.reserve(n / miniBatchSize);
+            // shuffle trainingData
+            std::random_shuffle(trainingData.begin(), trainingData.end());
+            // group into list of mini batches
+            for(int k = 0; k < n; k += miniBatchSize)
+            {
+                //MiniBatch_t miniBatch;
+                //for(int l = k; l < k + miniBatchSize; ++l)
+                //{
+                //    miniBatch.push_back(trainingData[l]);
+                //}
+                //miniBatches.push_back(miniBatch);
+                this->MiniBatchUpdate(trainingData, k, miniBatchSize);
+            }
+            //for(MiniBatch_t& miniBatch : miniBatches)
+            //{
+            //    this->MiniBatchUpdate(miniBatch, miniBatchSize);
+            //}
+        }
+    }
+
+    void FFNeuralNet::BackPropogate(std::vector<double>& inputs,
+                                    std::vector<double>& expectedOutputs)
     {
         this->FeedForward(inputs);
         int expectedOutputIndex = 0;
@@ -174,7 +207,7 @@ namespace Neural
         {
             if(i == this->_numLayers - 1)
             {
-                for(INeuronPtr pOutputNeuron : this->_layers[i])
+                for(INeuronPtr& pOutputNeuron : this->_layers[i])
                 {
                     pOutputNeuron->_delta =
                         this->_costFunctionPrime(pOutputNeuron->_a,
@@ -182,7 +215,7 @@ namespace Neural
                         * pOutputNeuron->ActivationFunctionPrime(pOutputNeuron->_z);
                     pOutputNeuron->_deltaUpdate += pOutputNeuron->_delta;
 
-                    for(SynapsePtr pSynapse : pOutputNeuron->_incomingEdges)
+                    for(SynapsePtr& pSynapse : pOutputNeuron->_incomingEdges)
                     {
                         pSynapse->_wUpdate += pSynapse->_pSource->_a * pOutputNeuron->_delta;
                     }
@@ -191,17 +224,17 @@ namespace Neural
             }
             else
             {
-                for(INeuronPtr pNeuron : this->_layers[i])
+                for(INeuronPtr& pNeuron : this->_layers[i])
                 {
                     pNeuron->_delta = 0.0;
-                    for(SynapsePtr pSynapse : pNeuron->_outgoingEdges)
+                    for(SynapsePtr& pSynapse : pNeuron->_outgoingEdges)
                     {
                         pNeuron->_delta += pSynapse->_weight * pSynapse->_pDest->_delta;
                     }
                     pNeuron->_delta *= pNeuron->ActivationFunctionPrime(pNeuron->_z);
                     pNeuron->_deltaUpdate += pNeuron->_delta;
 
-                    for(SynapsePtr pSynapse : pNeuron->_incomingEdges)
+                    for(SynapsePtr& pSynapse : pNeuron->_incomingEdges)
                     {
                         pSynapse->_wUpdate += pSynapse->_pSource->_a * pNeuron->_delta;
                     }
@@ -210,20 +243,50 @@ namespace Neural
         }
     }
 
-    void FFNeuralNet::MiniBatchUpdate(std::list<std::pair<std::vector<double>,
-                                                            std::vector<double> > > miniBatch,
+    /**
+    void FFNeuralNet::MiniBatchUpdate(std::vector<std::pair<std::vector<double>,
+                                                            std::vector<double> > >& miniBatch,
                                       int miniBatchSize)
     {
         using MiniBatchTuple_t = std::pair<std::vector<double>, std::vector<double> >;
-        for(MiniBatchTuple_t tuple : miniBatch)
+        for(MiniBatchTuple_t& tuple : miniBatch)
         {
             this->BackPropogate(std::get<0>(tuple), std::get<1>(tuple));
         }
         for(int i = this->_numLayers - 1; i >= 0; --i)
         {
-            for(INeuronPtr pNeuron : this->_layers[i])
+            for(INeuronPtr& pNeuron : this->_layers[i])
             {
-                for(SynapsePtr pSynapse : pNeuron->_incomingEdges)
+                for(SynapsePtr& pSynapse : pNeuron->_incomingEdges)
+                {
+                    pSynapse->Update(this->_learningRate / miniBatchSize);
+                }
+                pNeuron->Update(this->_learningRate / miniBatchSize);
+            }
+        }
+    }
+    */
+
+    void FFNeuralNet::MiniBatchUpdate(std::vector<std::pair<std::vector<double>,
+                                                            std::vector<double> > >& trainingData,
+                                      int startIndex, int miniBatchSize)
+    {
+        //using MiniBatchTuple_t = std::pair<std::vector<double>, std::vector<double> >;
+        //for(MiniBatchTuple_t& tuple : miniBatch)
+        //{
+        //    this->BackPropogate(std::get<0>(tuple), std::get<1>(tuple));
+        //}
+        for(int i = 0; i < miniBatchSize; ++i)
+        {
+            this->BackPropogate(std::get<0>(trainingData[i + startIndex]),
+                                std::get<1>(trainingData[i + startIndex]));
+        }
+
+        for(int i = this->_numLayers - 1; i >= 0; --i)
+        {
+            for(INeuronPtr& pNeuron : this->_layers[i])
+            {
+                for(SynapsePtr& pSynapse : pNeuron->_incomingEdges)
                 {
                     pSynapse->Update(this->_learningRate / miniBatchSize);
                 }

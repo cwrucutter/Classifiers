@@ -37,7 +37,7 @@ class TimeRecorder(object):
     def time(self, trainingData, epochs, miniBatchSize, testData=None):
 
         runningTime = 0.0
-        for epoch in xrange(0, epochs):
+        for epoch in xrange(1, epochs + 1):
             start = time.clock()
             self.numpyNet.SGD(trainingData, 1, miniBatchSize, self.learningRate, testData)
             runningTime += (time.clock() - start)
@@ -50,7 +50,7 @@ class TimeRecorder(object):
                 self.data["matrix"][self.netSizesStr][epoch].append(runningTime)
 
         runningTime = 0.0
-        for epoch in xrange(0, epochs):
+        for epoch in xrange(1, epochs + 1):
             start = time.clock()
             self.graphNet.train(trainingData, 1, miniBatchSize, testData)
             runningTime += (time.clock() - start)

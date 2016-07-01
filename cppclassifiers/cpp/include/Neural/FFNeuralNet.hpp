@@ -53,22 +53,30 @@ namespace Neural
 
             ~FFNeuralNet();
 
-            std::vector<double> FeedForward(std::vector<double> inputs);
+            std::vector<double> FeedForward(std::vector<double>& inputs);
 
             void Train(std::vector<std::pair<std::vector<double>,
-                                             std::vector<double> > > trainingData,
+                                             std::vector<double> > >& trainingData,
                        int epochs, int miniBatchSize,
                        std::vector<std::pair<std::vector<double>,
-                                             std::vector<double> > > testData={});
+                                             std::vector<double> > >& testData);
+
+            void Train(std::vector<std::pair<std::vector<double>,
+                                             std::vector<double> > >& trainingData,
+                       int epochs, int miniBatchSize);
 
         private:
 
-            void BackPropogate(std::vector<double> inputs,
-                               std::vector<double> expectedOutputs);
+            void BackPropogate(std::vector<double>& inputs,
+                               std::vector<double>& expectedOutputs);
 
-            void MiniBatchUpdate(std::list<std::pair<std::vector<double>,
-                                                       std::vector<double> > > miniBatch,
-                                 int miniBatchSize);
+            //void MiniBatchUpdate(std::vector<std::pair<std::vector<double>,
+            //                                           std::vector<double> > >& miniBatch,
+            //                     int miniBatchSize);
+
+            void MiniBatchUpdate(std::vector<std::pair<std::vector<double>,
+                                                       std::vector<double> > >& trainingData,
+                                      int startIndex, int miniBatchSize);
 
             int                                     _numLayers;
             double                                  _learningRate;

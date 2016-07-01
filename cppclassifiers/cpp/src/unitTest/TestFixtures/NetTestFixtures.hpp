@@ -76,6 +76,25 @@ namespace Tests
             NetTestCppNeuronPtr _pNeuronChanger;
     };
 
+    /**
+    class FFNeuralNetSpeedTest : public ::testing::Test
+    {
+        protected:
+
+            virtual void SetUp();
+
+            virtual void TearDown();
+
+            void FFNetFeedForwardSpeedTest();
+
+            void FFNetTrainSpeedTest();
+
+            FFNeuralNetPtr      _pNet;
+            std::vector<std::pair<std::vector<double>, std::vector<double> > > _tData;
+            std::vector<std::pair<std::vector<double>, std::vector<double> > > _testData;
+    };
+    */
+
 } // end of namespace Tests
 } // end of namespace Neural
 } // end of namespace Classifiers

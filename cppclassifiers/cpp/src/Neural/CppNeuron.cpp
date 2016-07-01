@@ -9,8 +9,10 @@ namespace Classifiers
 namespace Neural
 {
 
-    CppNeuron::CppNeuron(double (*pFunc)(double)) :
-        INeuron(), _pActivationFunction(pFunc)
+    CppNeuron::CppNeuron(double (*pActiveFunc)(double),
+                         double (*pActiveFuncPrime)(double)) :
+        INeuron(), _pActivationFunction(pActiveFunc),
+        _pActivationFunctionPrime(pActiveFuncPrime)
     {
     }
 
@@ -29,6 +31,17 @@ namespace Neural
         this->_z += this->_bias;
         this->_a = this->_pActivationFunction(this->_z);
     }
+
+    double CppNeuron::ActivationFunction(double val)
+    {
+        return this->_pActivationFunction(val);
+    }
+
+    double CppNeuron::ActivationFunctionPrime(double val)
+    {
+        return this->_pActivationFunctionPrime(val);
+    }
+
 
 } // end of namespace Neural
 } // end of namespace Classifiers

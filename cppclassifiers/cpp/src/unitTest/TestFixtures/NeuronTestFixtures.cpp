@@ -17,7 +17,8 @@ namespace Tests
     void CppNeuronTest::SetUp()
     {
         this->_pNeuron =
-            std::make_shared<CppNeuron>(&Sigmoid);
+            std::make_shared<CppNeuron>(&Sigmoid,
+                                        &SigmoidPrime);
     }
 
     void CppNeuronTest::TearDown()
@@ -43,7 +44,7 @@ namespace Tests
         EXPECT_EQ(Sigmoid(this->_pNeuron->_bias), this->_pNeuron->_a);
 
         // 1 synapse
-        pNeurons.push_back(std::make_shared<CppNeuron>(&Sigmoid));
+        pNeurons.push_back(std::make_shared<CppNeuron>(&Sigmoid, &SigmoidPrime));
         this->_pNeuron->_incomingEdges.push_back(
             std::make_shared<Synapse>(pNeurons[pNeurons.size() - 1], this->_pNeuron)
         );
@@ -54,7 +55,7 @@ namespace Tests
         EXPECT_EQ(Sigmoid(this->_pNeuron->_bias + pNeurons.size()), this->_pNeuron->_a);
 
         // 2 synapses
-        pNeurons.push_back(std::make_shared<CppNeuron>(&Sigmoid));
+        pNeurons.push_back(std::make_shared<CppNeuron>(&Sigmoid, &SigmoidPrime));
         this->_pNeuron->_incomingEdges.push_back(
             std::make_shared<Synapse>(pNeurons[pNeurons.size() - 1], this->_pNeuron)
         );
@@ -66,7 +67,7 @@ namespace Tests
 
 
         // 3 synapses
-        pNeurons.push_back(std::make_shared<CppNeuron>(&Sigmoid));
+        pNeurons.push_back(std::make_shared<CppNeuron>(&Sigmoid, &SigmoidPrime));
         this->_pNeuron->_incomingEdges.push_back(
             std::make_shared<Synapse>(pNeurons[pNeurons.size() - 1], this->_pNeuron)
         );
@@ -79,7 +80,7 @@ namespace Tests
         // many (10) synapses
         for(int i = 0; i < 7; ++i)
         {
-            pNeurons.push_back(std::make_shared<CppNeuron>(&Sigmoid));
+            pNeurons.push_back(std::make_shared<CppNeuron>(&Sigmoid, &SigmoidPrime));
             this->_pNeuron->_incomingEdges.push_back(
                 std::make_shared<Synapse>(pNeurons[pNeurons.size() - 1], this->_pNeuron)
             );

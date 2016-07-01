@@ -11,7 +11,7 @@ def sigmoid(z):
 
 def sigmoidPrime(z):
     val = sigmoid(z)
-    return val * (1 - val)
+    return val * (1 - (val ** 2))
 
 
 class Neuron(object):
@@ -166,12 +166,12 @@ class Network(object):
             miniBatches = [
                 trainingData[k:k+miniBatchSize]
                 for k in xrange(0, n, miniBatchSize)]
-            print("numMiniBatches: %s" % (len(miniBatches)))
-            it = 0
+            # print("numMiniBatches: %s" % (len(miniBatches)))
+            # it = 0
             for miniBatch in miniBatches:
                 self.miniBatchUpdate(miniBatch, miniBatchSize)
-                print("Mini batch update: %s done" % it)
-                it += 1
+                # print("Mini batch update: %s done" % it)
+                # it += 1
             if testData:
                 print "Epoch {0}: {1} / {2}".format(
                     j, self.evaluate(testData), testDataLength)

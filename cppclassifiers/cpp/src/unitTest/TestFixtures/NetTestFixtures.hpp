@@ -36,6 +36,12 @@ namespace Tests
 
             int GetLengthOfEdges(INeuronPtr pNeuron, bool incoming);
 
+            double GetDeltaUpdate(INeuronPtr pNeuron);
+
+            double GetBias(INeuronPtr pNeuron);
+
+            std::vector<SynapsePtr> GetEdges(INeuronPtr pNeuron, bool incoming);
+
     };
 
     using NetTestCppNeuronPtr = std::shared_ptr<NetTestCppNeuron>;
@@ -55,6 +61,16 @@ namespace Tests
             void TestFFNetConstructor();
 
             void TestFFNetFeedForward();
+
+            void TestFFNetBackPropogate();
+
+            void TestFFNetMiniBatchUpdate();
+
+            void TestFFNetMiniBatchPartitionAlgorithm();
+
+            void TestFFNetTrain();
+
+            void TestFFNetDefaultEvaluationFunction();
 
             FFNeuralNetPtr      _pNet;
             NetTestCppNeuronPtr _pNeuronChanger;

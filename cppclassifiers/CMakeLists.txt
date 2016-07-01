@@ -58,17 +58,26 @@ set( ${PROJECT_NAME}_PRIVATE_HEADERS
 set( ${PROJECT_NAME}_TEST_SRCS
     ${TEST_ROOT}/Common/TestFunctions.cpp
 
+    ${TEST_ROOT}/data/mnist_trainingData.cpp
+    ${TEST_ROOT}/data/mnist_valData.cpp
+    ${TEST_ROOT}/data/mnist_testData.cpp
+    ${TEST_ROOT}/loaders/NeuralFileParser.cpp
+
     ${TEST_ROOT}/TestFixtures/NeuronTestFixtures.cpp
     ${TEST_ROOT}/TestFixtures/NetTestFixtures.cpp
 
     ${TEST_ROOT}/CppNeuron_unit.cpp
     ${TEST_ROOT}/FFNeuralNet_unit.cpp
+    ${TEST_ROOT}/FFNeuralNet_speedTest.cpp
     ${TEST_ROOT}/main.cpp
 )
 
 set( ${PROJECT_NAME}_TEST_HEADERS
     ${TEST_ROOT}/Common/TestFunctions.hpp
     ${TEST_ROOT}/Common/FriendDeclarations.hpp
+
+    ${TEST_ROOT}/data/mnist_data.hpp
+    ${TEST_ROOT}/loaders/NeuralFileParser.hpp
 
     ${TEST_ROOT}/TestFixtures/NeuronTestFixtures.hpp
     ${TEST_ROOT}/TestFixtures/NetTestFixtures.hpp

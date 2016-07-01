@@ -21,6 +21,31 @@ namespace Tests
         this->TestFFNetFeedForward();
     }
 
+    TEST_F(FFNeuralNetTest, TestNetDefaultEvaluationFunction)
+    {
+        this->TestFFNetDefaultEvaluationFunction();
+    }
+
+    TEST_F(FFNeuralNetTest, TestNetBackPropogate)
+    {
+        this->TestFFNetBackPropogate();
+    }
+
+    TEST_F(FFNeuralNetTest, TestNetMiniBatchUpdate)
+    {
+        this->TestFFNetMiniBatchUpdate();
+    }
+
+    TEST_F(FFNeuralNetTest, TestNetMiniBatchPartitionAlgorithm)
+    {
+        this->TestFFNetMiniBatchPartitionAlgorithm();
+    }
+
+    TEST_F(FFNeuralNetTest, TestNetTrain)
+    {
+        this->TestFFNetTrain();
+    }
+
 } // end of namespace Tests
 } // end of namespace Neural
 } // end of namespace Classifiers

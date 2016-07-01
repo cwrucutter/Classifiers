@@ -22,15 +22,21 @@ namespace Neural
         TEST_CPPNEURON_FRIENDS;
         public:
 
-            CppNeuron(double (*pFunc)(double));
+            CppNeuron(double (*pActiveFunc)(double),
+                      double (*pActiveFuncPrime)(double));
 
             ~CppNeuron();
 
-            virtual void ComputeValue();
+            virtual void ComputeValue() override;
+
+            virtual double ActivationFunction(double val) override;
+
+            virtual double ActivationFunctionPrime(double val) override;
 
         private:
 
             double (*_pActivationFunction)(double);
+            double (*_pActivationFunctionPrime)(double);
 
     };
 

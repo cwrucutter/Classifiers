@@ -35,26 +35,32 @@ class TimeRecorder(object):
         self.learningRate = learningRate
 
     def time(self, trainingData, epochs, miniBatchSize, testData=None):
-        start = time.clock()
-        self.numpyNet.SGD(trainingData, epochs, miniBatchSize, self.learningRate, testData)
-        diff = (time.clock() - start)
 
-        if self.netSizesStr not in self.data["matrix"]:
-            self.data["matrix"][self.netSizesStr] = {}
-        if epochs not in self.data["matrix"][self.netSizesStr]:
-            self.data["matrix"][self.netSizesStr][epochs] = [diff]
-        else:
-            self.data["matrix"][self.netSizesStr][epochs].append(diff)
-        start = time.clock()
-        self.graphNet.train(trainingData, epochs, miniBatchSize, testData)
-        diff = (time.clock() - start)
+        runningTime = 0.0
+        for epoch in xrange(0, epochs):
+            start = time.clock()
+            self.numpyNet.SGD(trainingData, 1, miniBatchSize, self.learningRate, testData)
+            runningTime += (time.clock() - start)
 
-        if self.netSizesStr not in self.data["graph"]:
-            self.data["graph"][self.netSizesStr] = {}
-        if epochs not in self.data["graph"][self.netSizesStr]:
-            self.data["graph"][self.netSizesStr][epochs] = [diff]
-        else:
-            self.data["graph"][self.netSizesStr][epochs].append(diff)
+            if self.netSizesStr not in self.data["matrix"]:
+                self.data["matrix"][self.netSizesStr] = {}
+            if epoch not in self.data["matrix"][self.netSizesStr]:
+                self.data["matrix"][self.netSizesStr][epoch] = [runningTime]
+            else:
+                self.data["matrix"][self.netSizesStr][epoch].append(runningTime)
+
+        runningTime = 0.0
+        for epoch in xrange(0, epochs):
+            start = time.clock()
+            self.graphNet.train(trainingData, 1, miniBatchSize, testData)
+            runningTime += (time.clock() - start)
+
+            if self.netSizesStr not in self.data["graph"]:
+                self.data["graph"][self.netSizesStr] = {}
+            if epoch not in self.data["graph"][self.netSizesStr]:
+                self.data["graph"][self.netSizesStr][epoch] = [runningTime]
+            else:
+                self.data["graph"][self.netSizesStr][epoch].append(runningTime)
 
         with open(self.filePath, "w") as file:
             json.dump(self.data, file)

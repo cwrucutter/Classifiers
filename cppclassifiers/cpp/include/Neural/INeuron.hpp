@@ -33,6 +33,10 @@ namespace Neural
 
             virtual void ComputeValue() = 0;
 
+            virtual double ActivationFunction(double val) = 0;
+
+            virtual double ActivationFunctionPrime(double val) = 0;
+
             void Update(double learningRate);
 
             double GetActivation();

@@ -428,7 +428,7 @@ namespace Tests
             });
         for(int i = 0; i < pNode->_numRows; ++i)
         {
-            pNode->_table[i] = {2 * i, 2 * i + 1};
+            pNode->_table[i] = {2.0 * i, 2.0 * i + 1.0};
         }
         rowIndex = 0;
         depValues.clear();

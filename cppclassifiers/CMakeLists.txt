@@ -47,6 +47,7 @@ set( ${PROJECT_NAME}_SRCS
 
     ${SRC_ROOT}/Bayesian/StateFunctor.cpp
     ${SRC_ROOT}/Bayesian/BayesianNode.cpp
+    ${SRC_ROOT}/Bayesian/NaiveBayesClassifier.cpp
 )
 
 set( ${PROJECT_NAME}_PUBLIC_HEADERS
@@ -56,6 +57,7 @@ set( ${PROJECT_NAME}_PUBLIC_HEADERS
 
     ${INC_ROOT}/Bayesian/StateFunctor.hpp
     ${INC_ROOT}/Bayesian/BayesianNode.hpp
+    ${INC_ROOT}/Bayesian/NaiveBayesClassifier.hpp
 )
 
 set( ${PROJECT_NAME}_PRIVATE_HEADERS
@@ -79,8 +81,11 @@ set( ${PROJECT_NAME}_TEST_SRCS
     ${TEST_ROOT}/Common/TestStateFunctors.cpp
 
     ${TEST_ROOT}/TestFixtures/BayesianNodeTestFixtures.cpp
+    ${TEST_ROOT}/TestFixtures/NaiveBayesClassifierTestFixtures.cpp
 
     ${TEST_ROOT}/BayesianNode_unit.cpp
+    ${TEST_ROOT}/NaiveBayesClassifier_unit.cpp
+    ${TEST_ROOT}/NaiveBayesClassifier_speedTest.cpp
     ${TEST_ROOT}/main.cpp
 )
 
@@ -96,6 +101,7 @@ set( ${PROJECT_NAME}_TEST_HEADERS
     ${TEST_ROOT}/Common/TestStateFunctors.hpp
 
     ${TEST_ROOT}/TestFixtures/BayesianNodeTestFixtures.hpp
+    ${TEST_ROOT}/TestFixtures/NaiveBayesClassifierTestFixtures.hpp
 )
 
 source_group( PublicHeaders FILES ${${PROJECT_NAME}_PUBLIC_HEADERS} )

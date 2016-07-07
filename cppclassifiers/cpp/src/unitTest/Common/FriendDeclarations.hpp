@@ -29,8 +29,13 @@ namespace Tests
 {
 
     class BayesianNodeTest;
+    class NaiveBayesClassifierTest;
     #define BAYESIANNODE_TEST_FRIENDS \
-        friend class Classifiers::Bayesian::Tests::BayesianNodeTest;
+        friend class Classifiers::Bayesian::Tests::BayesianNodeTest;\
+        friend class Classifiers::Bayesian::Tests::NaiveBayesClassifierTest;
+
+    #define NAIVEBAYESCLASSIFIER_TEST_FRIENDS \
+        friend class Classifiers::Bayesian::Tests::NaiveBayesClassifierTest;
 
 } // end of namespace Tests
 } // end of namespace Bayesian

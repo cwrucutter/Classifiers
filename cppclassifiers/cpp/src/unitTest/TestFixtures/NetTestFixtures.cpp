@@ -14,15 +14,15 @@ namespace Neural
 namespace Tests
 {
 
-    NetTestCppNeuron::NetTestCppNeuron()
+    NetTestNeuron::NetTestNeuron()
     {
     }
 
-    NetTestCppNeuron::~NetTestCppNeuron()
+    NetTestNeuron::~NetTestNeuron()
     {
     }
 
-    void NetTestCppNeuron::SetNeuronParams(INeuronPtr pNeuron,
+    void NetTestNeuron::SetNeuronParams(NeuronPtr pNeuron,
                                            std::map<std::string, double> dict)
     {
         pNeuron->_a = dict["a"];
@@ -36,44 +36,31 @@ namespace Tests
         }
     }
 
-    bool NetTestCppNeuron::CheckSynapse(INeuronPtr getSynapse, int index,
-        bool incoming, INeuronPtr pSource, INeuronPtr pDest)
+    bool NetTestNeuron::CheckSynapse(NeuronPtr getSynapse, int index,
+        NeuronPtr pSource, NeuronPtr pDest)
     {
-        if(incoming)
-        {
-            return getSynapse->_incomingEdges[index]->_pSource == pSource &&
-                getSynapse->_incomingEdges[index]->_pDest == pDest;
-        }
-        return getSynapse->_outgoingEdges[index]->_pSource == pSource &&
-            getSynapse->_outgoingEdges[index]->_pDest == pDest;
+        return getSynapse->_incomingEdges[index]->_pSource == pSource &&
+            getSynapse->_incomingEdges[index]->_pDest == pDest;
     }
 
-    int NetTestCppNeuron::GetLengthOfEdges(INeuronPtr pNeuron, bool incoming)
+    int NetTestNeuron::GetLengthOfEdges(NeuronPtr pNeuron)
     {
-        if(incoming)
-        {
-            return pNeuron->_incomingEdges.size();
-        }
-        return pNeuron->_outgoingEdges.size();
+        return pNeuron->_incomingEdges.size();
     }
 
-    double NetTestCppNeuron::GetBias(INeuronPtr pNeuron)
+    double NetTestNeuron::GetBias(NeuronPtr pNeuron)
     {
         return pNeuron->_bias;
     }
 
-    double NetTestCppNeuron::GetDeltaUpdate(INeuronPtr pNeuron)
+    double NetTestNeuron::GetDeltaUpdate(NeuronPtr pNeuron)
     {
         return pNeuron->_deltaUpdate;
     }
 
-    std::vector<SynapsePtr> NetTestCppNeuron::GetEdges(INeuronPtr pNeuron, bool incoming)
+    std::vector<SynapsePtr> NetTestNeuron::GetEdges(NeuronPtr pNeuron)
     {
-        if(incoming)
-        {
-            return pNeuron->_incomingEdges;
-        }
-        return pNeuron->_outgoingEdges;
+        return pNeuron->_incomingEdges;
     }
 
 
@@ -84,7 +71,7 @@ namespace Tests
     {
         this->_pNet =
             std::make_shared<FFNeuralNet>(std::vector<int>{2, 3, 1});
-        this->_pNeuronChanger = std::make_shared<NetTestCppNeuron>();
+        this->_pNeuronChanger = std::make_shared<NetTestNeuron>();
     }
 
     void FFNeuralNetTest::TearDown()
@@ -106,29 +93,13 @@ namespace Tests
                     {
                         EXPECT_EQ(
                             this->_pNeuronChanger->GetLengthOfEdges(
-                                pNet->_layers[i][j],
-                                false
-                            ),
-                            pNet->_layers[i + 1].size()
-                        );
-                        EXPECT_EQ(
-                            this->_pNeuronChanger->GetLengthOfEdges(
-                                pNet->_layers[i + 1][k],
-                                true
+                                pNet->_layers[i + 1][k]
                             ),
                             pNet->_layers[i].size()
                         );
                         EXPECT_TRUE(this->_pNeuronChanger->CheckSynapse(
-                            pNet->_layers[i][j],
-                            k,
-                            false,
-                            pNet->_layers[i][j],
-                            pNet->_layers[i + 1][k]
-                        ));
-                        EXPECT_TRUE(this->_pNeuronChanger->CheckSynapse(
                             pNet->_layers[i + 1][k],
                             j,
-                            true,
                             pNet->_layers[i][j],
                             pNet->_layers[i + 1][k]
                         ));
@@ -140,9 +111,9 @@ namespace Tests
 
     void FFNeuralNetTest::SetupGraph(FFNeuralNetPtr pNet, std::map<std::string, double> params)
     {
-        for(std::vector<INeuronPtr> layer : pNet->_layers)
+        for(std::vector<NeuronPtr> layer : pNet->_layers)
         {
-            for(INeuronPtr pNeuron : layer)
+            for(NeuronPtr pNeuron : layer)
             {
                 this->_pNeuronChanger->SetNeuronParams(pNeuron, params);
             }
@@ -206,34 +177,34 @@ namespace Tests
         this->_pNet->BackPropogate(std::get<0>(evalData[0]), std::get<1>(evalData[0]));
 
         // check _wUpdates and _deltaUpdates for each node and synapse
-        std::vector<INeuronPtr> inputLayer = this->_pNet->_layers[0];
-        std::vector<INeuronPtr> hiddenLayer = this->_pNet->_layers[1];
-        std::vector<INeuronPtr> outputLayer = this->_pNet->_layers[2];
+        std::vector<NeuronPtr> inputLayer = this->_pNet->_layers[0];
+        std::vector<NeuronPtr> hiddenLayer = this->_pNet->_layers[1];
+        std::vector<NeuronPtr> outputLayer = this->_pNet->_layers[2];
 
-        for(INeuronPtr pNeuron : inputLayer)
+        for(NeuronPtr pNeuron : inputLayer)
         {
-            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron, false))
+            EXPECT_NEAR(0.0, this->_pNeuronChanger->GetDeltaUpdate(pNeuron),
+                0.00000001);
+        }
+        for(NeuronPtr pNeuron : hiddenLayer)
+        {
+            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron))
             {
                 EXPECT_NEAR(0.00169483013962, pSynapse->_wUpdate,
                     0.000000001);
             }
-            EXPECT_NEAR(0.0, this->_pNeuronChanger->GetDeltaUpdate(pNeuron),
-                0.00000001);
+            EXPECT_NEAR(0.00169483013962, this->_pNeuronChanger->GetDeltaUpdate(pNeuron),
+                0.000000001);
         }
-        for(INeuronPtr pNeuron : hiddenLayer)
+        for(NeuronPtr pNeuron : outputLayer)
         {
-            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron, false))
+            EXPECT_NEAR(0.0192134135835, this->_pNeuronChanger->GetDeltaUpdate(pNeuron),
+                0.00000001);
+            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron))
             {
                 EXPECT_NEAR(0.0183022006676, pSynapse->_wUpdate,
                     0.00000001);
             }
-            EXPECT_NEAR(0.00169483013962, this->_pNeuronChanger->GetDeltaUpdate(pNeuron),
-                0.000000001);
-        }
-        for(INeuronPtr pNeuron : outputLayer)
-        {
-            EXPECT_NEAR(0.0192134135835, this->_pNeuronChanger->GetDeltaUpdate(pNeuron),
-                0.00000001);
         }
     }
 
@@ -258,32 +229,32 @@ namespace Tests
         this->_pNet->MiniBatchUpdate(evalData, 0, 1);
 
         // check _wUpdates and _deltaUpdates for each node and synapse
-        std::vector<INeuronPtr> inputLayer = this->_pNet->_layers[0];
-        std::vector<INeuronPtr> hiddenLayer = this->_pNet->_layers[1];
-        std::vector<INeuronPtr> outputLayer = this->_pNet->_layers[2];
+        std::vector<NeuronPtr> inputLayer = this->_pNet->_layers[0];
+        std::vector<NeuronPtr> hiddenLayer = this->_pNet->_layers[1];
+        std::vector<NeuronPtr> outputLayer = this->_pNet->_layers[2];
 
-        for(INeuronPtr pNeuron : inputLayer)
+        for(NeuronPtr pNeuron : inputLayer)
         {
-            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron, false))
+            EXPECT_NEAR(1.0 - 0.0, this->_pNeuronChanger->GetBias(pNeuron),
+                0.00000001);
+        }
+        for(NeuronPtr pNeuron : hiddenLayer)
+        {
+            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron))
             {
                 EXPECT_NEAR(1.0 - 0.00169483013962, pSynapse->_weight,
                     0.000000001);
             }
-            EXPECT_NEAR(1.0 - 0.0, this->_pNeuronChanger->GetBias(pNeuron),
-                0.00000001);
+            EXPECT_NEAR(1.0 - 0.00169483013962, this->_pNeuronChanger->GetBias(pNeuron),
+                0.000000001);
         }
-        for(INeuronPtr pNeuron : hiddenLayer)
+        for(NeuronPtr pNeuron : outputLayer)
         {
-            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron, false))
+            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron))
             {
                 EXPECT_NEAR(1.0 - 0.0183022006676, pSynapse->_weight,
                     0.00000001);
             }
-            EXPECT_NEAR(1.0 - 0.00169483013962, this->_pNeuronChanger->GetBias(pNeuron),
-                0.000000001);
-        }
-        for(INeuronPtr pNeuron : outputLayer)
-        {
             EXPECT_NEAR(1.0 - 0.0192134135835, this->_pNeuronChanger->GetBias(pNeuron),
                 0.00000001);
         }
@@ -294,28 +265,28 @@ namespace Tests
         hiddenLayer = this->_pNet->_layers[1];
         outputLayer = this->_pNet->_layers[2];
 
-        for(INeuronPtr pNeuron : inputLayer)
+        for(NeuronPtr pNeuron : inputLayer)
         {
-            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron, false))
+            EXPECT_NEAR(1.0, this->_pNeuronChanger->GetBias(pNeuron),
+                0.00000001);
+        }
+        for(NeuronPtr pNeuron : hiddenLayer)
+        {
+            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron))
             {
                 EXPECT_NEAR(0.996521334375, pSynapse->_weight,
                     0.000000001);
             }
-            EXPECT_NEAR(1.0, this->_pNeuronChanger->GetBias(pNeuron),
-                0.00000001);
+            EXPECT_NEAR(0.996521334375, this->_pNeuronChanger->GetBias(pNeuron),
+                0.000000001);
         }
-        for(INeuronPtr pNeuron : hiddenLayer)
+        for(NeuronPtr pNeuron : outputLayer)
         {
-            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron, false))
+            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron))
             {
                 EXPECT_NEAR(0.962167804037, pSynapse->_weight,
                     0.00000001);
             }
-            EXPECT_NEAR(0.996521334375, this->_pNeuronChanger->GetBias(pNeuron),
-                0.000000001);
-        }
-        for(INeuronPtr pNeuron : outputLayer)
-        {
             EXPECT_NEAR(0.960279293461, this->_pNeuronChanger->GetBias(pNeuron),
                 0.00000001);
         }
@@ -402,32 +373,32 @@ namespace Tests
         this->_pNet->Train(evalData, 1, 1);
 
         // check _wUpdates and _deltaUpdates for each node and synapse
-        std::vector<INeuronPtr> inputLayer = this->_pNet->_layers[0];
-        std::vector<INeuronPtr> hiddenLayer = this->_pNet->_layers[1];
-        std::vector<INeuronPtr> outputLayer = this->_pNet->_layers[2];
+        std::vector<NeuronPtr> inputLayer = this->_pNet->_layers[0];
+        std::vector<NeuronPtr> hiddenLayer = this->_pNet->_layers[1];
+        std::vector<NeuronPtr> outputLayer = this->_pNet->_layers[2];
 
-        for(INeuronPtr pNeuron : inputLayer)
+        for(NeuronPtr pNeuron : inputLayer)
         {
-            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron, false))
+            EXPECT_NEAR(1.0, this->_pNeuronChanger->GetBias(pNeuron),
+                0.00000001);
+        }
+        for(NeuronPtr pNeuron : hiddenLayer)
+        {
+            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron))
             {
                 EXPECT_NEAR(1.0 - 0.00169483013962, pSynapse->_weight,
                     0.000000001);
             }
-            EXPECT_NEAR(1.0, this->_pNeuronChanger->GetBias(pNeuron),
-                0.00000001);
+            EXPECT_NEAR(1.0 - 0.00169483013962, this->_pNeuronChanger->GetBias(pNeuron),
+                0.000000001);
         }
-        for(INeuronPtr pNeuron : hiddenLayer)
+        for(NeuronPtr pNeuron : outputLayer)
         {
-            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron, false))
+            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron))
             {
                 EXPECT_NEAR(1.0 - 0.0183022006676, pSynapse->_weight,
                     0.00000001);
             }
-            EXPECT_NEAR(1.0 - 0.00169483013962, this->_pNeuronChanger->GetBias(pNeuron),
-                0.000000001);
-        }
-        for(INeuronPtr pNeuron : outputLayer)
-        {
             EXPECT_NEAR(1.0 - 0.0192134135835, this->_pNeuronChanger->GetBias(pNeuron),
                 0.00000001);
         }
@@ -440,28 +411,28 @@ namespace Tests
         hiddenLayer = this->_pNet->_layers[1];
         outputLayer = this->_pNet->_layers[2];
 
-        for(INeuronPtr pNeuron : inputLayer)
+        for(NeuronPtr pNeuron : inputLayer)
         {
-            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron, false))
+            EXPECT_NEAR(1.0, this->_pNeuronChanger->GetBias(pNeuron),
+                0.00000001);
+        }
+        for(NeuronPtr pNeuron : hiddenLayer)
+        {
+            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron))
             {
                 EXPECT_NEAR(0.996521334375, pSynapse->_weight,
                     0.000000001);
             }
-            EXPECT_NEAR(1.0, this->_pNeuronChanger->GetBias(pNeuron),
-                0.00000001);
+            EXPECT_NEAR(0.996521334375, this->_pNeuronChanger->GetBias(pNeuron),
+                0.000000001);
         }
-        for(INeuronPtr pNeuron : hiddenLayer)
+        for(NeuronPtr pNeuron : outputLayer)
         {
-            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron, false))
+            for(SynapsePtr pSynapse : this->_pNeuronChanger->GetEdges(pNeuron))
             {
                 EXPECT_NEAR(0.962167804037, pSynapse->_weight,
                     0.00000001);
             }
-            EXPECT_NEAR(0.996521334375, this->_pNeuronChanger->GetBias(pNeuron),
-                0.000000001);
-        }
-        for(INeuronPtr pNeuron : outputLayer)
-        {
             EXPECT_NEAR(0.960279293461, this->_pNeuronChanger->GetBias(pNeuron),
                 0.00000001);
         }

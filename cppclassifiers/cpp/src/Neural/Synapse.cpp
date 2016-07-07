@@ -3,15 +3,15 @@
 
 // C++ PROJECT INCLUDES
 #include "Neural/Synapse.hpp"
-#include "Neural/INeuron.hpp"
+#include "Neural/Neuron.hpp"
 
 namespace Classifiers
 {
 namespace Neural
 {
 
-    Synapse::Synapse(INeuronPtr pSource,
-                     INeuronPtr pDest) : _pSource(pSource),
+    Synapse::Synapse(NeuronPtr pSource,
+                     NeuronPtr pDest) : _pSource(pSource),
         _pDest(pDest), _weight(0.0 /**make random value*/),
         _wUpdate(0.0)
     {

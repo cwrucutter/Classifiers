@@ -13,16 +13,16 @@ namespace Classifiers
 namespace Neural
 {
 
-    class INeuron;
+    class Neuron;
 
 
     struct Synapse
     {
-        std::shared_ptr<INeuron> _pSource, _pDest;
+        std::shared_ptr<Neuron> _pSource, _pDest;
         double _weight, _wUpdate;
 
-        Synapse(std::shared_ptr<INeuron> pSource,
-                std::shared_ptr<INeuron> pDest);
+        Synapse(std::shared_ptr<Neuron> pSource,
+                std::shared_ptr<Neuron> pDest);
 
         ~Synapse();
 

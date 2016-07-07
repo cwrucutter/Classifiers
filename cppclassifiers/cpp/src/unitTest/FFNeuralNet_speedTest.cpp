@@ -72,12 +72,21 @@ namespace Tests
         std::default_random_engine generator;
         std::normal_distribution<double> dist(0.0, 1.0);
         std::vector<double> inputs;
+        inputs.reserve(layersScheme[0]);
 
         for(int i = 0; i < layersScheme[0]; ++i)
         {
             inputs.push_back(dist(generator));
         }
         pNet->FeedForward(inputs);
+    }
+
+    TEST(FFNeuralNetSpeedTest, FeedForwardLargeSpeedTest)
+    {
+        for(auto& data : tData)
+        {
+            pNet->FeedForward(std::get<0>(data));
+        }
     }
 
     TEST(FFNeuralNetSpeedTest, TrainSpeedTest)

@@ -7,8 +7,7 @@
 
 // C++ PROJECT INCLUDES
 #include "unitTest/Common/FriendDeclarations.hpp"
-#include "Neural/INeuron.hpp"
-#include "Neural/CppNeuron.hpp"
+#include "Neural/Neuron.hpp"
 
 namespace Classifiers
 {
@@ -17,11 +16,11 @@ namespace Neural
 namespace Tests
 {
 
-    class CppNeuronTest : public ::testing::Test
+    class NeuronTest : public ::testing::Test
     {
         protected:
 
-            CppNeuronPtr _pNeuron;
+            NeuronPtr _pNeuron;
 
             virtual void SetUp();
 

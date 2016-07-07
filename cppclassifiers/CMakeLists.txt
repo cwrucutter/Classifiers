@@ -39,20 +39,28 @@ catkin_package(
 
 
 set( ${PROJECT_NAME}_SRCS
-    ${SRC_ROOT}/Neural/INeuron.cpp
+    #${SRC_ROOT}/Neural/INeuron.cpp
+    ${SRC_ROOT}/Neural/Neuron.cpp
     ${SRC_ROOT}/Neural/Synapse.cpp
-    ${SRC_ROOT}/Neural/CppNeuron.cpp
+    #${SRC_ROOT}/Neural/CppNeuron.cpp
     ${SRC_ROOT}/Neural/FFNeuralNet.cpp
+
+    ${SRC_ROOT}/Bayesian/StateFunctor.cpp
+    ${SRC_ROOT}/Bayesian/BayesianNode.cpp
 )
 
 set( ${PROJECT_NAME}_PUBLIC_HEADERS
-    ${INC_ROOT}/Neural/INeuron.hpp
+    #${INC_ROOT}/Neural/INeuron.hpp
+    ${INC_ROOT}/Neural/Neuron.hpp
     ${INC_ROOT}/Neural/FFNeuralNet.hpp
+
+    ${INC_ROOT}/Bayesian/StateFunctor.hpp
+    ${INC_ROOT}/Bayesian/BayesianNode.hpp
 )
 
 set( ${PROJECT_NAME}_PRIVATE_HEADERS
     ${INC_ROOT}/Neural/Synapse.hpp
-    ${INC_ROOT}/Neural/CppNeuron.hpp
+    #${INC_ROOT}/Neural/CppNeuron.hpp
 )
 
 set( ${PROJECT_NAME}_TEST_SRCS
@@ -66,6 +74,13 @@ set( ${PROJECT_NAME}_TEST_SRCS
     ${TEST_ROOT}/CppNeuron_unit.cpp
     ${TEST_ROOT}/FFNeuralNet_unit.cpp
     ${TEST_ROOT}/FFNeuralNet_speedTest.cpp
+
+
+    ${TEST_ROOT}/Common/TestStateFunctors.cpp
+
+    ${TEST_ROOT}/TestFixtures/BayesianNodeTestFixtures.cpp
+
+    ${TEST_ROOT}/BayesianNode_unit.cpp
     ${TEST_ROOT}/main.cpp
 )
 
@@ -77,6 +92,10 @@ set( ${PROJECT_NAME}_TEST_HEADERS
 
     ${TEST_ROOT}/TestFixtures/NeuronTestFixtures.hpp
     ${TEST_ROOT}/TestFixtures/NetTestFixtures.hpp
+
+    ${TEST_ROOT}/Common/TestStateFunctors.hpp
+
+    ${TEST_ROOT}/TestFixtures/BayesianNodeTestFixtures.hpp
 )
 
 source_group( PublicHeaders FILES ${${PROJECT_NAME}_PUBLIC_HEADERS} )

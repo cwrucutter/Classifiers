@@ -12,17 +12,17 @@ namespace Neural
 namespace Tests
 {
 
-    TEST_F(CppNeuronTest, TestNeuronConstructor)
+    TEST_F(NeuronTest, TestNeuronConstructor)
     {
         this->TestConstructor();
     }
 
-    TEST_F(CppNeuronTest, TestNeuronComputeValue)
+    TEST_F(NeuronTest, TestNeuronComputeValue)
     {
         this->TestComputeValue();
     }
 
-    TEST_F(CppNeuronTest, TestNeuronUpdate)
+    TEST_F(NeuronTest, TestNeuronUpdate)
     {
         this->TestUpdate();
     }

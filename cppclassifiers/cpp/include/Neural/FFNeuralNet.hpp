@@ -14,7 +14,7 @@
 #include <vector>
 
 // C++ PROJECT INCLUDES
-#include "Neural/INeuron.hpp"
+#include "Neural/Neuron.hpp"
 
 namespace Classifiers
 {
@@ -67,6 +67,8 @@ namespace Neural
 
         private:
 
+            void FeedForwardNoResult(std::vector<double>& inputs);
+
             void BackPropogate(std::vector<double>& inputs,
                                std::vector<double>& expectedOutputs);
 
@@ -80,7 +82,7 @@ namespace Neural
 
             int                                     _numLayers;
             double                                  _learningRate;
-            std::vector<std::vector<INeuronPtr> >   _layers;
+            std::vector<std::vector<NeuronPtr> >    _layers;
             double (*_costFunction)(std::vector<double>, std::vector<double>);
             double (*_costFunctionPrime)(double, double);
             int (*_evaluationFunction)(std::vector<std::pair<std::vector<double>,

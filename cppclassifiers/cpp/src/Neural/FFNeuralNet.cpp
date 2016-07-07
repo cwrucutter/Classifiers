@@ -1,10 +1,11 @@
 // SYSTEM INCLUDES
 #include <algorithm> // std::random_shuffle
 #include <math.h>    // exp, pow
+#include <mutex>
+#include <thread>
 
 // C++ PROJECT INCLUDES
 #include "Neural/FFNeuralNet.hpp"
-#include "Neural/CppNeuron.hpp"
 
 namespace Classifiers
 {
@@ -70,22 +71,21 @@ namespace Neural
         SynapsePtr pSynapse = nullptr;
         for(int i = 0; i < this->_numLayers; ++i)
         {
-            std::vector<INeuronPtr> layer;
+            std::vector<NeuronPtr> layer;
             for(int j = 0; j < (int)layersConfig[i]; ++j)
             {
-                layer.push_back(std::make_shared<CppNeuron>(&Sigmoid, &SigmoidPrime));
+                layer.push_back(std::make_shared<Neuron>(&Sigmoid, &SigmoidPrime));
             }
             this->_layers.push_back(layer);
         }
 
         for(int i = 0; i < this->_numLayers - 1; ++i)
         {
-            for(INeuronPtr pNeuron1 : this->_layers[i])
+            for(NeuronPtr pNeuron1 : this->_layers[i])
             {
-                for(INeuronPtr pNeuron2 : this->_layers[i + 1])
+                for(NeuronPtr pNeuron2 : this->_layers[i + 1])
                 {
                     pSynapse = std::make_shared<Synapse>(pNeuron1, pNeuron2);
-                    pNeuron1->_outgoingEdges.push_back(pSynapse);
                     pNeuron2->_incomingEdges.push_back(pSynapse);
                 }
             }
@@ -98,34 +98,32 @@ namespace Neural
 
     std::vector<double> FFNeuralNet::FeedForward(std::vector<double>& inputs)
     {
-        int inputIndex = 0;
-        std::vector<double> result;
-        for(int layerIndex = 0; layerIndex < this->_numLayers; ++layerIndex)
+        int lastLayerIndex = this->_numLayers - 1;
+        std::vector<double> result(this->_layers[lastLayerIndex].size(), 0.0);
+        //result.reserve(this->_layers[this->_numLayers - 1].size());
+        //int inputIndex = 0;
+        for(NeuronPtr& pInputNeuron : this->_layers[1])
         {
-            if(layerIndex == 0)
+            //pInputNeuron->_a = inputs[inputIndex];
+            //++inputIndex;
+            pInputNeuron->ComputeValue(inputs);
+        }
+        for(int layerIndex = 2/**0*/; layerIndex < lastLayerIndex; ++layerIndex)
+        {
+            for(NeuronPtr& pNeuron : this->_layers[layerIndex])
             {
-                for(INeuronPtr& pInputNeuron : this->_layers[layerIndex])
-                {
-                    pInputNeuron->_a = inputs[inputIndex];
-                    ++inputIndex;
-                }
-            }
-            else if(layerIndex == this->_numLayers - 1)
-            {
-                for(INeuronPtr& pOutputNeuron : this->_layers[layerIndex])
-                {
-                    pOutputNeuron->ComputeValue();
-                    result.push_back(pOutputNeuron->_a);
-                }
-            }
-            else
-            {
-                for(INeuronPtr& pNeuron : this->_layers[layerIndex])
-                {
-                    pNeuron->ComputeValue();
-                }
+                pNeuron->ComputeValue();
             }
         }
+        for(int i = 0; i < this->_layers[lastLayerIndex].size(); ++i)
+        {
+            result[i] = this->_layers[lastLayerIndex][i]->ComputeValue();
+        }
+        //for(INeuronPtr& pOutputNeuron : this->_layers[layerIndex])
+        //{
+            //result.push_back(pOutputNeuron->ComputeValue());
+            // result.push_back(pOutputNeuron->_a);
+        //}
         return result;
     }
 
@@ -198,16 +196,33 @@ namespace Neural
         }
     }
 
+    void FFNeuralNet::FeedForwardNoResult(std::vector<double>& inputs)
+    {
+        for(NeuronPtr& pInputNeuron : this->_layers[1])
+        {
+            //pInputNeuron->_a = inputs[inputIndex];
+            //++inputIndex;
+            pInputNeuron->ComputeValue(inputs);
+        }
+        for(int layerIndex = 2/**0*/; layerIndex < this->_numLayers; ++layerIndex)
+        {
+            for(NeuronPtr& pNeuron : this->_layers[layerIndex])
+            {
+                pNeuron->ComputeValue();
+            }
+        }
+    }
+
     void FFNeuralNet::BackPropogate(std::vector<double>& inputs,
                                     std::vector<double>& expectedOutputs)
     {
-        this->FeedForward(inputs);
+        this->FeedForwardNoResult(inputs);
         int expectedOutputIndex = 0;
         for(int i = this->_numLayers - 1; i > 0; --i)
         {
             if(i == this->_numLayers - 1)
             {
-                for(INeuronPtr& pOutputNeuron : this->_layers[i])
+                for(NeuronPtr& pOutputNeuron : this->_layers[i])
                 {
                     pOutputNeuron->_delta =
                         this->_costFunctionPrime(pOutputNeuron->_a,
@@ -217,27 +232,53 @@ namespace Neural
 
                     for(SynapsePtr& pSynapse : pOutputNeuron->_incomingEdges)
                     {
+                        pSynapse->_pSource->_delta += pSynapse->_weight * pOutputNeuron->_delta;
                         pSynapse->_wUpdate += pSynapse->_pSource->_a * pOutputNeuron->_delta;
                     }
                     ++expectedOutputIndex;
                 }
             }
+            else if(i == 1)
+            {
+                for(NeuronPtr& pNeuron : this->_layers[i])
+                {
+                    //pNeuron->_delta = 0.0;
+                    //for(SynapsePtr& pSynapse : pNeuron->_outgoingEdges)
+                    //{
+                    //    pNeuron->_delta += pSynapse->_weight * pSynapse->_pDest->_delta;
+                    //}
+                    pNeuron->_delta *= pNeuron->ActivationFunctionPrime(pNeuron->_z);
+                    pNeuron->_deltaUpdate += pNeuron->_delta;
+
+                    for(int j = 0; j < pNeuron->_incomingEdges.size(); ++j)
+                    {
+                        pNeuron->_incomingEdges[j]->_wUpdate += inputs[j] * pNeuron->_delta;
+                    }
+                    pNeuron->_delta = 0.0;
+                    //for(SynapsePtr& pSynapse : pNeuron->_incomingEdges)
+                    //{
+                    //    pSynapse->_wUpdate += pSynapse->_pSource->_a * pNeuron->_delta;
+                    //}
+                }
+            }
             else
             {
-                for(INeuronPtr& pNeuron : this->_layers[i])
+                for(NeuronPtr& pNeuron : this->_layers[i])
                 {
-                    pNeuron->_delta = 0.0;
-                    for(SynapsePtr& pSynapse : pNeuron->_outgoingEdges)
-                    {
-                        pNeuron->_delta += pSynapse->_weight * pSynapse->_pDest->_delta;
-                    }
+                    //pNeuron->_delta = 0.0;
+                    //for(SynapsePtr& pSynapse : pNeuron->_outgoingEdges)
+                    //{
+                    //    pNeuron->_delta += pSynapse->_weight * pSynapse->_pDest->_delta;
+                    //}
                     pNeuron->_delta *= pNeuron->ActivationFunctionPrime(pNeuron->_z);
                     pNeuron->_deltaUpdate += pNeuron->_delta;
 
                     for(SynapsePtr& pSynapse : pNeuron->_incomingEdges)
                     {
+                        pSynapse->_pSource->_delta += pSynapse->_weight * pNeuron->_delta;
                         pSynapse->_wUpdate += pSynapse->_pSource->_a * pNeuron->_delta;
                     }
+                    pNeuron->_delta = 0.0;
                 }
             }
         }
@@ -282,16 +323,35 @@ namespace Neural
                                 std::get<1>(trainingData[i + startIndex]));
         }
 
+        std::vector<std::thread> threads;
+        threads.reserve(this->_numLayers);
+        auto& layers = this->_layers;
+        double& lRate = this->_learningRate;
         for(int i = this->_numLayers - 1; i >= 0; --i)
         {
-            for(INeuronPtr& pNeuron : this->_layers[i])
+            threads.push_back(std::thread([i, &layers, lRate, miniBatchSize]()
             {
-                for(SynapsePtr& pSynapse : pNeuron->_incomingEdges)
+                for(NeuronPtr& pNeuron : layers[i])
                 {
-                    pSynapse->Update(this->_learningRate / miniBatchSize);
+                    for(SynapsePtr& pSynapse : pNeuron->_incomingEdges)
+                    {
+                        pSynapse->Update(lRate / miniBatchSize);
+                    }
+                    pNeuron->Update(lRate / miniBatchSize);
                 }
-                pNeuron->Update(this->_learningRate / miniBatchSize);
-            }
+            }));
+            //for(INeuronPtr& pNeuron : this->_layers[i])
+            //{
+            //    for(SynapsePtr& pSynapse : pNeuron->_incomingEdges)
+            //    {
+            //        pSynapse->Update(this->_learningRate / miniBatchSize);
+            //    }
+            //    pNeuron->Update(this->_learningRate / miniBatchSize);
+            //}
+        }
+        for(std::thread& th : threads)
+        {
+            th.join();
         }
     }
 

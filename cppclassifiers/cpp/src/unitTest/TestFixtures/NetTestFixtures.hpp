@@ -10,7 +10,7 @@
 
 // C++ PROJECT INCLUDES
 #include "unitTest/Common/FriendDeclarations.hpp"
-#include "Neural/INeuron.hpp"
+#include "Neural/Neuron.hpp"
 #include "Neural/FFNeuralNet.hpp"
 
 namespace Classifiers
@@ -20,31 +20,31 @@ namespace Neural
 namespace Tests
 {
 
-    class NetTestCppNeuron
+    class NetTestNeuron
     {
         public:
 
-            NetTestCppNeuron();
+            NetTestNeuron();
 
-            ~NetTestCppNeuron();
+            ~NetTestNeuron();
 
-            void SetNeuronParams(INeuronPtr pNeuron,
+            void SetNeuronParams(NeuronPtr pNeuron,
                 std::map<std::string, double> dict);
 
-            bool CheckSynapse(INeuronPtr getSynapseFrom, int index,
-                bool incoming, INeuronPtr pSource, INeuronPtr pDest);
+            bool CheckSynapse(NeuronPtr getSynapseFrom, int index,
+                NeuronPtr pSource, NeuronPtr pDest);
 
-            int GetLengthOfEdges(INeuronPtr pNeuron, bool incoming);
+            int GetLengthOfEdges(NeuronPtr pNeuron);
 
-            double GetDeltaUpdate(INeuronPtr pNeuron);
+            double GetDeltaUpdate(NeuronPtr pNeuron);
 
-            double GetBias(INeuronPtr pNeuron);
+            double GetBias(NeuronPtr pNeuron);
 
-            std::vector<SynapsePtr> GetEdges(INeuronPtr pNeuron, bool incoming);
+            std::vector<SynapsePtr> GetEdges(NeuronPtr pNeuron);
 
     };
 
-    using NetTestCppNeuronPtr = std::shared_ptr<NetTestCppNeuron>;
+    using NetTestNeuronPtr = std::shared_ptr<NetTestNeuron>;
 
     class FFNeuralNetTest : public ::testing::Test
     {
@@ -73,7 +73,7 @@ namespace Tests
             void TestFFNetDefaultEvaluationFunction();
 
             FFNeuralNetPtr      _pNet;
-            NetTestCppNeuronPtr _pNeuronChanger;
+            NetTestNeuronPtr    _pNeuronChanger;
     };
 
     /**

@@ -9,18 +9,31 @@ namespace Neural
 namespace Tests
 {
 
-    class CppNeuronTest;
-    class NetTestCppNeuron;
-    #define TEST_CPPNEURON_FRIENDS \
-        friend class Classifiers::Neural::Tests::CppNeuronTest;\
-        friend class Classifiers::Neural::Tests::NetTestCppNeuron;
+    class NeuronTest;
+    class NetTestNeuron;
+    #define TEST_NEURON_FRIENDS \
+        friend class Classifiers::Neural::Tests::NeuronTest;\
+        friend class Classifiers::Neural::Tests::NetTestNeuron;
 
     class FFNeuralNetTest;
     #define TEST_NET_FRIENDS \
         friend class Classifiers::Neural::Tests::FFNeuralNetTest;
 
-} // end of namespace Classifiers
+} // end of namespace Tests
 } // end of namespace Neural
+
+
+namespace Bayesian
+{
+namespace Tests
+{
+
+    class BayesianNodeTest;
+    #define BAYESIANNODE_TEST_FRIENDS \
+        friend class Classifiers::Bayesian::Tests::BayesianNodeTest;
+
+} // end of namespace Tests
+} // end of namespace Bayesian
 } // end of namespace Classifiers
 
 
